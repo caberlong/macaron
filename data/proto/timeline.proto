@@ -1,0 +1,31 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "data/proto/fin_org.proto";
+import "data/proto/activity/trading_activity.proto";
+import "data/proto/activity/earning_activity.proto";
+import "data/proto/activity/reorg_activity.proto";
+import "google/protobuf/timestamp.proto";
+
+// Represents timeline of activities of a financial org.
+message timeline {
+  // A global unique ID for this finance organization.
+	int32 fin_entity_id = 1;
+
+	// start and end timestamp for this timeline. Specifically, the range can be denoted as
+	// [start_timestamp_usec, end_timestamp_usec).
+	Timestamp start_timestamp = 2;
+	Timestamp end_timestamp = 3;
+
+	oneof Activity {
+		// Trading activity.
+		TradingActivity trading_activity = 1;
+		// Release of earning activity.
+		EarningActivity Earning_activity = 2;
+		// Reorg activity.
+		ReorgActivity reorg_activity = 3;
+	}
+
+	repeated Activity activities = 4;
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "data/proto/fin_entity.proto";
+import "data/proto/activity/activity_timestamp.proto";
+import "google/protobuf/timestamp.proto";
+
+// Represents reorg of activities of a financial org.
+message ReorgActivity {
+  // A global unique ID for this finance entity.
+	int32 fin_entity_id = 1;
+
+	// Timestamp when activity happens.
+	ActivityTimestamp activity_timestamp = 2;
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "google/protobuf/timestamp.proto";
+
+// Represents timestamp when an activity happen.
+message ActivityTimestamp {
+	// Timestamp when activity happens.
+	google.protobuf.Timestamp start_timestamp = 1;
+
+	// Duration of the activity in micro seconds.
+	int64 duration_usec = 2;
+}

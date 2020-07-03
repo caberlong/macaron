@@ -1,0 +1,13 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+// Represents geologic traits associated with a financial entity.
+message GeoTrait {
+  // A global unique ID for this finance entity.
+  int32 fin_entity_id = 1;
+
+  // Timestamp of inception and termination of this org.
+  Timestamp inception_timestamp = 2;
+  Timestamp termination_timestamp = 3;
+}
