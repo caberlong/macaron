@@ -1,0 +1,19 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "data/proto/activity/trading_activity.proto";
+import "data/proto/activity/earning_activity.proto";
+import "data/proto/activity/reorg_activity.proto";
+
+// Represents timeline of activities of a financial org.
+message Activity {
+	oneof Type {
+		// Trading activity.
+		TradingActivity trading_activity = 1;
+		// Release of earning activity.
+		EarningActivity Earning_activity = 2;
+		// Reorg activity.
+		ReorgActivity reorg_activity = 3;
+	}
+}

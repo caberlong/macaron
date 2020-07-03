@@ -2,7 +2,7 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/trait.proto";
+import "data/proto/trait/trait.proto";
 
 // Represents a finance entity.
 message FinEntity {
@@ -12,17 +12,6 @@ message FinEntity {
 	// A name to identify this organization.
   string name = 2;
 
-	// Attributions
-  oneof trait {
-		// Common traits associated with this org.
-		CommonTrait common_trait = 1;
-		// Geographics traits associated with this org.
-		GeoTrait geo_trait = 2;
-		// Demographics traits associated with this org.
-		DemoTrait demo_trait = 3;
-		// Traits related to sector that this org belongs to.
-		SectorTrait sector_trait = 4;
-	}
-
+	// All traits associated with this entity.	
 	repeated Trait traits = 3;
 }

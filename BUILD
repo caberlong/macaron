@@ -1,6 +1,6 @@
 package_group(
-    name = "macaron",
-    packages = [
-        "//...",
-    ],
+	name = "data_consumer",
+	packages = [
+		"//data/..."
+	],
 )

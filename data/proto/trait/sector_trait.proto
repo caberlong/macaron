@@ -1,0 +1,29 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+// Represents sector traits associated with a financial entity.
+message SectorTrait {
+  // A global unique ID for this finance entity.
+  int32 fin_entity_id = 1;
+
+	// Sectors that this entity belongs to.
+  repeated BeaSector bea_sectors = 2;
+}
+
+// Based on BEA GDP tables. https://www.bea.gov/resources/learning-center/what-to-know-industries
+enum BeaSector {
+	UNKNOWN = 0;
+	AGRICULTURE = 1;
+	MINING = 2;
+	UTILITIES = 3;
+	CONSTRUCTION = 4;
+	MANUFACTURING = 5;
+	WHOLESALE = 6;
+	RETAIL = 7;
+	TRANSPORTATION = 8;
+	INFORMATION = 9;
+	FINANCE = 10;
+	PROFESSIONAL_SERVICE = 11;
+	GOVERNMENT = 12;
+}
