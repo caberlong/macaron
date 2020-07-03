@@ -1,15 +1,25 @@
-load("@rules_antlr//antlr:antlr4.bzl", "antlr")
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_antlr//antlr:antlr4.bzl", "antlr")
 
 antlr(
-    name = "json_antlr",
+    name = "generated",
     srcs = ["JSON.g4"],
     language = "Python3",
 )
 
 py_library(
-    name = "json_antlr_py",
-    srcs = [":json_antlr"],
+    name = "lib",
+    srcs = [":generated"],
 )
 
-py_binary
+py_binary(
+    name = "json",
+    srcs = ["json.py"],
+    imports = ["generated.py"],
+    data = ["//antlr/json/testdata"],
+    args = ["$(location //antlr/json/testdata)"],
+    deps = [
+        ":lib",
+        "@antlr4_runtimes//:python",
+    ],
+)
