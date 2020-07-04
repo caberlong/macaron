@@ -1,0 +1,14 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "data/proto/fin_entity.proto";
+import "data/proto/timeline.proto";
+
+// Output data from a parser.
+message ParserOutput {
+	oneof data {
+		FinEntity fin_entity = 1;
+		Timeline timeline = 2;
+	}
+}
