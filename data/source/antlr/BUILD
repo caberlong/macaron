@@ -19,8 +19,8 @@ py_library(
 antlr(                                                                                              
     name = "yahoo_quote_antlr",                                                                             
     srcs = [
-			"YAHOOQUOTE.g4",
- 			"JSON.g4",
+			"YahooQuoteLexer.g4",
+			"YahooQuoteParser.g4",
 		],                                                                             
     language = "Python3",                                                                           
 )                                                                                                   

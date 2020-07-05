@@ -1,14 +1,14 @@
 import sys
 from antlr4 import *
-from YAHOOQUOTELexer import YAHOOQUOTELexer
-from YAHOOQUOTEParser import YAHOOQUOTEParser
+from YahooQuoteLexer import YahooQuoteLexer
+from YahooQuoteParser import YahooQuoteParser
 
 
 def main(argv):
     input = FileStream(argv[1], encoding='utf-8')
-    lexer = YAHOOQUOTELexer(input)
+    lexer = YahooQuoteLexer(input)
     stream = CommonTokenStream(lexer)
-    parser = YAHOOQUOTEParser(stream)
+    parser = YahooQuoteParser(stream)
     tree = parser.yahoo_quote()
     print(tree.toStringTree(recog=parser))
 

@@ -32,6 +32,7 @@ value
    ;
 
 
+
 STRING
    : '"' (ESC | SAFECODEPOINT)* '"'
    ;
