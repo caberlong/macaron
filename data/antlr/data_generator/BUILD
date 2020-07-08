@@ -6,29 +6,27 @@ package (
 )
                                                                                                     
 antlr(                                                                                              
-    name = "yahoo_quote_antlr",                                                                             
+    name = "data_generator_antlr",                                                                             
     srcs = [
-			"YahooQuoteLexer.g4",
-			"YahooQuoteParser.g4",
+			"DataGeneratorLexer.g4",
+			"DataGeneratorParser.g4",
 		],                                                                             
     language = "Python3",                                                                           
 )                                                                                                   
                                                                                                     
 py_library(                                                                                         
-    name = "yahoo_quote_antlr_py",                                                                                   
-    srcs = [":yahoo_quote_antlr"],                                                                          
+    name = "data_generator_antlr_py",                                                                                   
+    srcs = [":data_generator_antlr"],                                                                          
 )                                                                                                   
 
 py_binary(                                                                                          
-    name = "yahoo_quote_test",                                                               
-    srcs = ["yahoo_quote_test.py"],                                                          
-    imports = ["yahoo_quote_antlr.py"],                                                 
-    # data = ["//data/antlr/yahoo_quote/testdata:yahoo_quote_gspc_html"],                                 
-    # args = ["$(location //data/antlr/yahoo_quote/testdata:yahoo_quote_gspc_html)"],                     
-    data = ["//data/antlr/yahoo_quote/testdata:yahoo_quote_microsoft_html"],                              
-    args = ["$(location //data/antlr/yahoo_quote/testdata:yahoo_quote_microsoft_html)"],                  
+    name = "data_generator_test",                                                               
+    srcs = ["data_generator_test.py"],                                                          
+    imports = ["data_generator_antlr.py"],                                                 
+    data = ["//data/antlr/data_generator/testdata:data_generator_config"],                              
+    args = ["$(location //data/antlr/data_generator/testdata:data_generator_config)"],                  
     deps = [                                                                                        
-        ":yahoo_quote_antlr_py",                                                        
+        ":data_generator_antlr_py",                                                        
         "@antlr4_runtimes//:python",                                                                
     ],                                                                                              
 )
