@@ -5,9 +5,9 @@ package caber.macaron;
 import "data/proto/fin_entity.proto";
 import "data/proto/timeline.proto";
 
-// Output data from a parser.
-message ParserOutput {
-	oneof data {
+// Storage proto wrapper for all data types.
+message Data {
+	oneof Kind {
 		FinEntity fin_entity = 1;
 		Timeline timeline = 2;
 	}

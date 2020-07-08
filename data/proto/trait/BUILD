@@ -1,4 +1,4 @@
-load("@rules_proto_grpc//python:defs.bzl", "python_proto_compile")                                  
+load("@rules_proto_grpc//python:defs.bzl", "python_proto_library")                                  
 
 package(                                                                                            
   default_visibility = ["//:data_consumer"]                                                                   
@@ -26,7 +26,7 @@ cc_proto_library(
     deps = [":common_trait_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_compile(                                                                               
+python_proto_library(                                                                               
     name = "common_trait_python_proto",                                                              
     deps = [":common_trait_proto"],                                                                  
 )                                                                                                   
@@ -41,7 +41,7 @@ cc_proto_library(
     deps = [":demo_trait_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_compile(                                                                               
+python_proto_library(                                                                               
     name = "demo_trait_python_proto",                                                              
     deps = [":demo_trait_proto"],                                                                  
 )
@@ -56,7 +56,7 @@ cc_proto_library(
     deps = [":geo_trait_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_compile(                                                                               
+python_proto_library(                                                                               
     name = "geo_trait_python_proto",                                                              
     deps = [":geo_trait_proto"],                                                                  
 )
@@ -71,7 +71,7 @@ cc_proto_library(
     deps = [":sector_trait_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_compile(                                                                               
+python_proto_library(                                                                               
     name = "sector_trait_python_proto",                                                              
     deps = [":sector_trait_proto"],                                                                  
 )
