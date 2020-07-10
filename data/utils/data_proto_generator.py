@@ -67,7 +67,7 @@ class DataProtoGenerator:
     def enterProtoPath(self, ctx:DataGeneratorParser.ProtoPathContext):                             
       self._proto_paths.append(ctx.NAME().getText())
 
-  def generateDataProto(self, config: str):
+  def generateDataProto(self, config: str, data_proto):
     data_proto = data_pb2.Data()
     lexer = DataGeneratorLexer(InputStream(config))
     stream = CommonTokenStream(lexer)

@@ -5,7 +5,7 @@ package caber.macaron;
 import "google/protobuf/any.proto";
 
 // Generic parsers to parse the input data source.
-message ParserConfig {
+message DataSourceConfig {
   // Name of the parser class.
 	string class_name = 1;
 

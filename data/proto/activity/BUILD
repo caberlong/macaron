@@ -1,5 +1,3 @@
-load("@rules_proto_grpc//python:defs.bzl", "python_proto_library")                                  
-
 package(                                                                                            
   default_visibility = ["//:data_consumer"]                                                                   
 ) 
@@ -15,11 +13,6 @@ cc_proto_library(
     deps = [":activity_timestamp_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_library(                                                                               
-    name = "activity_timestamp_python_proto",                                                              
-    deps = [":activity_timestamp_proto"],                                                                  
-)                                                                                                   
-
 proto_library(                                                                                      
     name = "activity_proto",                                                                     
     srcs = ["activity.proto"],                                                                   
@@ -35,11 +28,6 @@ cc_proto_library(
     deps = [":activity_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_library(                                                                               
-    name = "activity_python_proto",                                                              
-    deps = [":activity_proto"],                                                                  
-)
-
 proto_library(                                                                                      
     name = "earning_activity_proto",                                                                     
     srcs = ["earning_activity.proto"],                                                                   
@@ -51,11 +39,6 @@ cc_proto_library(
     deps = [":earning_activity_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_library(                                                                               
-    name = "earning_activity_python_proto",                                                              
-    deps = [":earning_activity_proto"],                                                                  
-)
-
 proto_library(                                                                                      
     name = "reorg_activity_proto",                                                                     
     srcs = ["reorg_activity.proto"],                                                                   
@@ -67,11 +50,6 @@ cc_proto_library(
     deps = [":earning_activity_proto"],                                                                  
 )                                                                                                   
                                                                                                     
-python_proto_library(                                                                               
-    name = "reorg_activity_python_proto",                                                              
-    deps = [":earning_activity_proto"],                                                                  
-)
-
 proto_library(                                                                                      
     name = "trading_activity_proto",                                                                     
     srcs = ["trading_activity.proto"],                                                                   
@@ -82,8 +60,3 @@ cc_proto_library(
     name = "trading_activity_cc_proto",                                                                  
     deps = [":earning_activity_proto"],                                                                  
 )                                                                                                   
-                                                                                                    
-python_proto_library(                                                                               
-    name = "trading_activity_python_proto",                                                              
-    deps = [":earning_activity_proto"],                                                                  
-)
