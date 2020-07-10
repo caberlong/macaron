@@ -5,8 +5,8 @@ package (
 )
                                                                                                     
 py_library(                                                                                         
-    name = "generic_data_source",
-    srcs = ["generic_data_source.py"],
+    name = "generic_data_generator",
+    srcs = ["generic_data_generator.py"],
 		deps = [
 			"//data/proto:data_python_proto",
 			"@com_google_protobuf//:protobuf_python",
@@ -14,9 +14,11 @@ py_library(
 )                                                                                                   
 
 py_binary(                                                                                          
-    name = "generic_data_source_test",                                                               
-    srcs = ["generic_data_source_test.py"],                                                          
+    name = "generic_data_generator_test",                                                               
+    srcs = ["generic_data_generator_test.py"],                                                          
     deps = [                                                                                        
-      ":generic_data_source",                                                        
+      ":generic_data_generator",                                                        
+			"//data/utils:data_proto_generator",
+			"//data/proto:data_python_proto",
     ],                                                                                              
 )

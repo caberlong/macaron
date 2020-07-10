@@ -11,7 +11,7 @@ class DataProtoGenerator:
     pass
 
   class Listener(DataGeneratorParserListener):
-    def __init__(self, data_proto):
+    def __init__(self, data_proto: data_pb2.Data):
       self._sub_protos = []
       self._proto_paths = []
       self._var_values = {}
@@ -67,8 +67,7 @@ class DataProtoGenerator:
     def enterProtoPath(self, ctx:DataGeneratorParser.ProtoPathContext):                             
       self._proto_paths.append(ctx.NAME().getText())
 
-  def generateDataProto(self, config: str, data_proto):
-    data_proto = data_pb2.Data()
+  def generateDataProto(self, config: str, data_proto: data_pb2.Data):
     lexer = DataGeneratorLexer(InputStream(config))
     stream = CommonTokenStream(lexer)
     parser = DataGeneratorParser(stream)
@@ -76,4 +75,3 @@ class DataProtoGenerator:
     walker = ParseTreeWalker();
     listener = self.Listener(data_proto);
     walker.walk(listener, tree);
-    return data_proto;
