@@ -12,6 +12,7 @@ python_proto_library(
       ":timeline_proto",
       ":data_proto",
       ":data_source_config_proto",
+      "//data/proto/source:yahoo_quote_parser_config_proto"
     ],
 )
 
@@ -64,5 +65,3 @@ cc_proto_library(
     name = "data_source_config_cc_proto",                                                           
     deps = [":data_source_config_proto"],                                                           
 )                                                                                                   
-                                                                                                    
-

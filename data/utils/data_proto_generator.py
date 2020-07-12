@@ -4,6 +4,7 @@ from DataGeneratorLexer import DataGeneratorLexer
 from DataGeneratorParser import DataGeneratorParser
 from DataGeneratorParserListener import DataGeneratorParserListener
 from data.proto import data_pb2
+from google.protobuf import message_factory
 
 
 class DataProtoGenerator:
@@ -12,16 +13,22 @@ class DataProtoGenerator:
 
   class Listener(DataGeneratorParserListener):
     def __init__(self, data_proto: data_pb2.Data):
-      self._sub_protos = []
+      self._scopes = [data_proto]
       self._proto_paths = []
       self._var_values = {}
-      self._data_proto = data_proto
 
-    def setProtoFieldValue(self, total_proto_path, value):
-      print('set value %s to %s' % (value, total_proto_path))
+    def setFieldValue(self, value):
+      scope_field = self._scopes[-1]
+      for path in self._proto_paths[:-1]:
+        scope_field = getattr(scope_field, path)
+      setattr(scope_field, self._proto_paths[-1], value)
 
-    def getTotalProtoPath(self):
-      return '.'.join(self._sub_protos + self._proto_paths)
+    def pushScope(self, field_name):
+      """push the field message as the current scope."""
+      self._scopes.append(getattr(self._scopes[-1], field_name))
+
+    def popScope(self):
+      self._scopes.pop()
 
     def evalExpr(self, expr):
       if expr.NUMBER():
@@ -50,16 +57,16 @@ class DataProtoGenerator:
       self._var_values[ctx.NAME().getText()] = self.evalExpr(ctx.expr())
                                                                                                     
     # Enter a parse tree produced by DataGeneratorParser#assignSubProto.                            
-    def enterAssignSubProto(self, ctx:DataGeneratorParser.AssignSubProtoContext):                   
-      self._sub_protos.append(ctx.NAME().getText());
+    def enterAssignSubProto(self, ctx:DataGeneratorParser.AssignSubProtoContext):
+      self.pushScope(ctx.NAME().getText())
                                                                                                     
     # Exit a parse tree produced by DataGeneratorParser#assignSubProto.                             
     def exitAssignSubProto(self, ctx:DataGeneratorParser.AssignSubProtoContext):                    
-      self._sub_protos.pop();
+      self.popScope()
 
     # Exit a parse tree produced by DataGeneratorParser#assignField.                                
     def exitAssignField(self, ctx:DataGeneratorParser.AssignFieldContext):                          
-      self.setProtoFieldValue(self.getTotalProtoPath(), self.evalExpr(ctx.expr()))
+      self.setFieldValue(self.evalExpr(ctx.expr()))
       self._proto_paths.clear()
       pass                                                                                        
                                                                                                     
@@ -75,3 +82,4 @@ class DataProtoGenerator:
     walker = ParseTreeWalker();
     listener = self.Listener(data_proto);
     walker.walk(listener, tree);
+    print('Data proto output: %s' % data_proto)

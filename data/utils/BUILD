@@ -11,6 +11,7 @@ py_library(
 		deps = [
 			"//data/antlr/data_generator:data_generator_antlr_py",
 			"//data/proto:data_python_proto",
+      "@com_google_protobuf//:protobuf_python",
 			"@antlr4_runtimes//:python",                                                                
 		]
 )                                                                                                   

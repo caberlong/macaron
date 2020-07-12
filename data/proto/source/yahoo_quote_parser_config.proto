@@ -1,0 +1,25 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+// Configuration to retrieve information from Yahoo quote html page.
+message YahooQuoteParserConfig {
+  // Which tick to quote. E.g., msft.
+  string tick = 1;
+
+  // Page types for Yahoo quote.
+  enum PageType { 
+    UNKNOWN = 0;
+    SUMMARY = 1;
+    HISTORY = 2;
+    STATISTICS = 3;
+    PROFILE = 4;
+    ANALYSIS = 5;
+  }
+
+  // The page to obtain information from.
+  PageType page_type = 2;
+
+  // If set, read data from this local file path instead of online.
+  string local_file_path = 3;
+}
