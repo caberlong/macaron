@@ -7,7 +7,26 @@ from YahooQuoteParserListener import YahooQuoteParserListener
 
 from data.proto.source import yahoo_quote_parser_config_pb2 as config_pb2
 from data.proto import data_pb2
-                                                                                                    
+from macaron.data.utils import data_proto_generator
+
+SUMMARY_STORE = 'context.dispatcher.stores.QuoteSummaryStore'
+
+def _summaryStore(paths: list):
+  return '.'.join([SUMMARY_STORE, '.'.join(paths)])
+
+def _commonTraitConfig(config: str):
+  return 'fin_entity { traits { common_trait { %s } } }' % config
+    
+_jsonKeyToGeneratorConfigMap = { 
+  _summaryStore(['summaryProfile', 'longBusinessSummary']):
+    _commonTraitConfig('business_summary : $STRING;'),
+  _summaryStore(['summaryProfile', 'sector']):
+    _commonTraitConfig('sector : $STRING;'),
+  _summaryStore(['summaryProfile', 'industry']):
+    _commonTraitConfig('industry : $STRING;'),
+  _summaryStore(['summaryProfile', 'fullTimeEmployees']):
+    _commonTraitConfig('num_full_time_employees : $NUMBER;'),
+}
                                                                                                     
 class YahooQuoteParser:
   def __init__(self):
@@ -16,7 +35,8 @@ class YahooQuoteParser:
   class Listener(YahooQuoteParserListener):                                                      
     def __init__(self, data: data_pb2.Data):
       self._keys = []
-      self._data = data_pb2.Data
+      self._data = data
+      self._generator = data_proto_generator.DataProtoGenerator()
                                                                                                       
     def enterPair(self, ctx:AntlrParser.PairContext):                                            
       self._keys.append(ctx.STRING().getText()[1:-1])
@@ -25,17 +45,26 @@ class YahooQuoteParser:
       self._keys.pop()                                                                                
                                                                                                       
     def enterValue(self, ctx:AntlrParser.ValueContext):                                          
+      if ctx.TRUE() or ctx.FALSE() or ctx.NULL():
+        return
       if ctx.STRING():                                                                                
-        print("leaf string: keys=%s, value=%s" % ('.'.join(self._keys), ctx.STRING().getText()))      
+        self.populate_string_values(ctx.STRING().getText()[1:-1])
       if ctx.NUMBER():                                                                                
-        print("leaf number: keys=%s, value=%s" % ('.'.join(self._keys), ctx.NUMBER().getText()))      
-      if ctx.TRUE():                                                                                  
-        print("leaf TRUE: keys=%s, value=%s" % ('.'.join(self._keys), ctx.TRUE().getText()))          
-      if ctx.FALSE():                                                                                 
-        print("leaf FALSE: keys=%s, value=%s" % ('.'.join(self._keys), ctx.FALSE().getText()))        
-      if ctx.NULL():                                                                                  
-        print("leaf NULL: keys=%s, value=%s" % ('.'.join(self._keys), ctx.NULL().getText()))          
-                                                                                                      
+        self.populate_number_values(ctx.NUMBER().getText())
+        return
+
+    def populate_string_values(self, value: str):
+      config = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), None)
+      if config:
+        self._generator.generateDataProto(
+            config=config, data=self._data, overwrite=True, var_values={'STRING':value})
+
+    def populate_number_values(self, value: str):
+      config = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), None)
+      if config:
+        self._generator.generateDataProto(
+            config=config, data=self._data, overwrite=True, var_values={'NUMBER':value})
+        
                                                                                                       
   def parse(self, config: config_pb2.YahooQuoteParserConfig, data: data_pb2.Data):
     if config.local_file_path:

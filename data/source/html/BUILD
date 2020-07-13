@@ -7,6 +7,7 @@ py_library(
     deps = [
 				"//data/antlr/yahoo_quote:yahoo_quote_antlr_py",
         "//data/proto:data_python_proto",
+        "//data/utils:data_proto_generator",
         "@antlr4_runtimes//:python",
     ],
 )

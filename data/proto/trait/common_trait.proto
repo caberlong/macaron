@@ -12,4 +12,10 @@ message CommonTrait {
   // Timestamp of inception and termination of this org.
   google.protobuf.Timestamp inception_timestamp = 2;
   google.protobuf.Timestamp termination_timestamp = 3;
+
+  // Profile.
+  string business_summary = 4;
+  string sector = 5;
+  string industry = 6;
+  int32 num_full_time_employees = 7;
 }
