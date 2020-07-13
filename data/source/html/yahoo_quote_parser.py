@@ -19,13 +19,13 @@ def _commonTraitConfig(config: str):
     
 _jsonKeyToGeneratorConfigMap = { 
   _summaryStore(['summaryProfile', 'longBusinessSummary']):
-    _commonTraitConfig('business_summary : $STRING;'),
+    (_commonTraitConfig('business_summary : $STRING;'), True),
   _summaryStore(['summaryProfile', 'sector']):
-    _commonTraitConfig('sector : $STRING;'),
+    (_commonTraitConfig('sector : $STRING;'), True),
   _summaryStore(['summaryProfile', 'industry']):
-    _commonTraitConfig('industry : $STRING;'),
+    (_commonTraitConfig('industry : $STRING;'), True),
   _summaryStore(['summaryProfile', 'fullTimeEmployees']):
-    _commonTraitConfig('num_full_time_employees : $NUMBER;'),
+    (_commonTraitConfig('num_full_time_employees : $NUMBER;'), True)
 }
                                                                                                     
 class YahooQuoteParser:
@@ -54,16 +54,16 @@ class YahooQuoteParser:
         return
 
     def populate_string_values(self, value: str):
-      config = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), None)
+      (config, overwrite) = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), (None, None))
       if config:
         self._generator.generateDataProto(
-            config=config, data=self._data, overwrite=True, var_values={'STRING':value})
+            config=config, data=self._data, overwrite=overwrite, var_values={'STRING':value})
 
     def populate_number_values(self, value: str):
-      config = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), None)
+      (config, overwrite) = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), (None, None))
       if config:
         self._generator.generateDataProto(
-            config=config, data=self._data, overwrite=True, var_values={'NUMBER':value})
+            config=config, data=self._data, overwrite=overwrite, var_values={'NUMBER':value})
         
                                                                                                       
   def parse(self, config: config_pb2.YahooQuoteParserConfig, data: data_pb2.Data):
