@@ -32,6 +32,10 @@ class DataProtoGenerator:
           field_type == descriptor.FieldDescriptor.TYPE_SINT32 or
           field_type == descriptor.FieldDescriptor.TYPE_SINT64)
 
+    def IsFloatType(self, field_type):
+      return (field_type == descriptor.FieldDescriptor.TYPE_FLOAT or
+          field_type == descriptor.FieldDescriptor.TYPE_DOUBLE)
+
     def setFieldValue(self, value):
       scope_field = self._scopes[-1]
       for path in self._proto_paths[:-1]:
@@ -41,6 +45,8 @@ class DataProtoGenerator:
       field_descriptor = scope_field.DESCRIPTOR.fields_by_name[field_name]
       if self.IsIntType(field_descriptor.type):
         setattr(scope_field, field_name, int(value))
+      elif self.IsFloatType(field_descriptor.type):
+        setattr(scope_field, field_name, float(value))
       else:
         setattr(scope_field, field_name, value)
 
