@@ -17,8 +17,10 @@ py_binary(
     srcs = ["yahoo_quote_parser_test.py"],
     # data = ["//data/source/html/testdata:yahoo_quote_gspc_html"],
     # args = ["$(location //data/source/html/testdata:yahoo_quote_gspc_html)"],
-    data = ["//data/source/html/testdata:yahoo_quote_microsoft_html"],
-    args = ["$(location //data/source/html/testdata:yahoo_quote_microsoft_html)"],
+    # data = ["//data/source/html/testdata:yahoo_quote_microsoft_html"],
+    # args = ["$(location //data/source/html/testdata:yahoo_quote_microsoft_html)"],
+    data = ["//data/source/html/testdata:yahoo_quote_goog_html"],
+    args = ["$(location //data/source/html/testdata:yahoo_quote_goog_html)"],
     deps = [
         ":yahoo_quote_parser",
         "//data/proto:data_python_proto",

@@ -11,3 +11,8 @@ filegroup(
     name = "yahoo_quote_gspc_html",
     srcs = ["yahoo_quote_gspc.html"],
 )
+
+filegroup(
+    name = "yahoo_quote_goog_html",
+    srcs = ["yahoo_quote_goog.html"],
+)
