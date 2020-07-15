@@ -11,4 +11,12 @@ message Data {
 		FinEntity fin_entity = 1;
 		Timeline timeline = 2;
 	}
+
+  enum DataType {
+    UNKNOWN = 0;
+    FIN_ENTITY = 1; 
+    TIMELINE = 2;
+  }
 }
+
+

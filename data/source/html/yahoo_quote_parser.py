@@ -15,7 +15,10 @@ def _summaryStore(paths: list):
   return '.'.join([SUMMARY_STORE, '.'.join(paths)])
 
 def _commonTraitConfig(config: str):
-  return 'fin_entity { traits { common_trait { %s } } }' % config
+  return ('fin_entity { traits { common_trait { %s } } }' % config, data_pb2.Data.FIN_ENTITY)
+
+def _tradingActivityConfig(config: str):
+  return ('timeline { activities { trading_activity { %s } } }' % config, data_pb2.Data.TIMELINE)
     
 # Key: json path 
 # Value: (config, overwrite)
@@ -27,76 +30,74 @@ _jsonKeyToGeneratorConfigMap = {
     (_commonTraitConfig('sector : $STRING;'), True),
   _summaryStore(['summaryProfile', 'industry']):
     (_commonTraitConfig('industry : $STRING;'), True),
+
+  # trading activity
   _summaryStore(['summaryProfile', 'fullTimeEmployees']):
-    (_commonTraitConfig('num_full_time_employees : $NUMBER;'), True),
-
-  # price
+    (_tradingActivityConfig('num_full_time_employees : $NUMBER;'), True),
   _summaryStore(['price', 'marketCap', 'raw']):
-    (_commonTraitConfig('market_cap : $NUMBER;'), True),
+    (_tradingActivityConfig('market_cap : $NUMBER;'), True),
   _summaryStore(['price', 'symbol']):
-    (_commonTraitConfig('symbol : $STRING;'), True),
+    (_tradingActivityConfig('symbol : $STRING;'), True),
   _summaryStore(['price', 'quoteType']):
-    (_commonTraitConfig('quote_type : $STRING;'), True),
-
-  # financial data
+    (_tradingActivityConfig('quote_type : $STRING;'), True),
   _summaryStore(['financialData', 'currentPrice', 'raw']):
-    (_commonTraitConfig('current_price : $NUMBER;'), True),
+    (_tradingActivityConfig('price : $NUMBER;'), True),
   _summaryStore(['financialData', 'profitMargins', 'raw']):
-    (_commonTraitConfig('profit_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('profit_margin : $NUMBER;'), True),
   _summaryStore(['financialData', 'grossMargins', 'raw']):
-    (_commonTraitConfig('gross_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('gross_margin : $NUMBER;'), True),
   _summaryStore(['financialData', 'operatingMargins', 'raw']):
-    (_commonTraitConfig('operating_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('operating_margin : $NUMBER;'), True),
   _summaryStore(['financialData', 'operatingCashflow', 'raw']):
-    (_commonTraitConfig('operating_cash_flow : $NUMBER;'), True),
+    (_tradingActivityConfig('operating_cash_flow : $NUMBER;'), True),
   _summaryStore(['financialData', 'ebitdaMargins', 'raw']):
-    (_commonTraitConfig('ebitda_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('ebitda_margin : $NUMBER;'), True),
   _summaryStore(['financialData', 'ebitda', 'raw']):
-    (_commonTraitConfig('ebitda : $NUMBER;'), True),
+    (_tradingActivityConfig('ebitda : $NUMBER;'), True),
   _summaryStore(['financialData', 'totalCash', 'raw']):
-    (_commonTraitConfig('total_cash : $NUMBER;'), True),
+    (_tradingActivityConfig('total_cash : $NUMBER;'), True),
   _summaryStore(['financialData', 'totalDebt', 'raw']):
-    (_commonTraitConfig('total_debt : $NUMBER;'), True),
+    (_tradingActivityConfig('total_debt : $NUMBER;'), True),
   _summaryStore(['financialData', 'totalRevenue', 'raw']):
-    (_commonTraitConfig('total_revenue : $NUMBER;'), True),
+    (_tradingActivityConfig('total_revenue : $NUMBER;'), True),
   _summaryStore(['financialData', 'grossProfits', 'raw']):
-    (_commonTraitConfig('gross_profit : $NUMBER;'), True),
+    (_tradingActivityConfig('gross_profit : $NUMBER;'), True),
   _summaryStore(['financialData', 'freeCashflow', 'raw']):
-    (_commonTraitConfig('free_cash_flow : $NUMBER;'), True),
+    (_tradingActivityConfig('free_cash_flow : $NUMBER;'), True),
   _summaryStore(['financialData', 'revenueGrowth', 'raw']):
-    (_commonTraitConfig('revenue_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('revenue_growth : $NUMBER;'), True),
   _summaryStore(['financialData', 'earningsGrowth', 'raw']):
-    (_commonTraitConfig('earnings_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('earnings_growth : $NUMBER;'), True),
   _summaryStore(['financialData', 'numberOfAnalystOpinions', 'raw']):
-    (_commonTraitConfig('num_analyst_opinions : $NUMBER;'), True),
+    (_tradingActivityConfig('num_analyst_opinions : $NUMBER;'), True),
   _summaryStore(['financialData', 'targetLowPrice', 'raw']):
-    (_commonTraitConfig('target_low_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_low_price : $NUMBER;'), True),
   _summaryStore(['financialData', 'targetMeanPrice', 'raw']):
-    (_commonTraitConfig('target_mean_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_mean_price : $NUMBER;'), True),
   _summaryStore(['financialData', 'targetMedianPrice', 'raw']):
-    (_commonTraitConfig('target_median_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_median_price : $NUMBER;'), True),
   _summaryStore(['financialData', 'targetHighPrice', 'raw']):
-    (_commonTraitConfig('target_high_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_high_price : $NUMBER;'), True),
   _summaryStore(['financialData', 'recommendationKey']):
-    (_commonTraitConfig('recommendation_key : $STRING;'), True),
+    (_tradingActivityConfig('recommendation_key : $STRING;'), True),
   _summaryStore(['financialData', 'debtToEquity', 'raw']):
-    (_commonTraitConfig('debt_to_equity : $NUMBER;'), True),
+    (_tradingActivityConfig('debt_to_equity : $NUMBER;'), True),
   _summaryStore(['financialData', 'returnOnAssets', 'raw']):
-    (_commonTraitConfig('return_on_assets : $NUMBER;'), True),
+    (_tradingActivityConfig('return_on_assets : $NUMBER;'), True),
   _summaryStore(['financialData', 'returnOnEquity', 'raw']):
-    (_commonTraitConfig('return_on_equity : $NUMBER;'), True),
+    (_tradingActivityConfig('return_on_equity : $NUMBER;'), True),
   _summaryStore(['financialData', 'financialCurrency']):
-    (_commonTraitConfig('currency : $STRING;'), True),
+    (_tradingActivityConfig('currency : $STRING;'), True),
   _summaryStore(['financialData', 'earningsGrowth', 'raw']):
-    (_commonTraitConfig('earning_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('earning_growth : $NUMBER;'), True),
   _summaryStore(['financialData', 'totalCashPerShare', 'raw']):
-    (_commonTraitConfig('total_cash_per_share : $NUMBER;'), True),
+    (_tradingActivityConfig('total_cash_per_share : $NUMBER;'), True),
   _summaryStore(['financialData', 'revenuePerShare', 'raw']):
-    (_commonTraitConfig('revenue_per_share : $NUMBER;'), True),
+    (_tradingActivityConfig('revenue_per_share : $NUMBER;'), True),
   _summaryStore(['financialData', 'currentRatio', 'raw']):
-    (_commonTraitConfig('current_ratio : $NUMBER;'), True),
+    (_tradingActivityConfig('current_ratio : $NUMBER;'), True),
   _summaryStore(['financialData', 'quickRatio', 'raw']):
-    (_commonTraitConfig('quick_ratio : $NUMBER;'), True),
+    (_tradingActivityConfig('quick_ratio : $NUMBER;'), True),
 }
                                                                                                     
 class YahooQuoteParser:
@@ -104,9 +105,10 @@ class YahooQuoteParser:
     pass
 
   class Listener(YahooQuoteParserListener):                                                      
-    def __init__(self, data: data_pb2.Data):
+    def __init__(self, fin_entity: data_pb2.Data, activity: data_pb2.Data):
       self._keys = []
-      self._data = data
+      self._fin_entity = fin_entity
+      self._activity = activity
       self._generator = data_proto_generator.DataProtoGenerator()
                                                                                                       
     def enterPair(self, ctx:AntlrParser.PairContext):                                            
@@ -119,25 +121,43 @@ class YahooQuoteParser:
       if ctx.TRUE() or ctx.FALSE() or ctx.NULL():
         return
       if ctx.STRING():                                                                                
-        self.populate_string_values(ctx.STRING().getText()[1:-1])
+        self.populateStringValues(ctx.STRING().getText()[1:-1])
       if ctx.NUMBER():                                                                                
-        self.populate_number_values(ctx.NUMBER().getText())
+        self.populateNumberValues(ctx.NUMBER().getText())
         return
 
-    def populate_string_values(self, value: str):
-      (config, overwrite) = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), (None, None))
+    def populateStringValues(self, value: str):
+      ((config, data_type), overwrite) = _jsonKeyToGeneratorConfigMap.get(
+          '.'.join(self._keys), ((None, None), None))
       if config:
         self._generator.generateDataProto(
-            config=config, data=self._data, overwrite=overwrite, var_values={'STRING':value})
+            config=config,
+            data=self.getDataByType(data_type),
+            overwrite=overwrite,
+            var_values={'STRING':value})
 
-    def populate_number_values(self, value: str):
-      (config, overwrite) = _jsonKeyToGeneratorConfigMap.get('.'.join(self._keys), (None, None))
+    def populateNumberValues(self, value: str):
+      ((config, data_type), overwrite) = _jsonKeyToGeneratorConfigMap.get(
+          '.'.join(self._keys), ((None, None), None))
       if config:
         self._generator.generateDataProto(
-            config=config, data=self._data, overwrite=overwrite, var_values={'NUMBER':value})
+            config=config,
+            data=self.getDataByType(data_type),
+            overwrite=overwrite,
+            var_values={'NUMBER':value})
+
+    def getDataByType(self, data_type: data_pb2.Data.DataType):
+      if data_type == data_pb2.Data.FIN_ENTITY:
+        return self._fin_entity
+      if data_type == data_pb2.Data.TIMELINE:
+        return self._activity
+      raise
         
                                                                                                       
-  def parse(self, config: config_pb2.YahooQuoteParserConfig, data: data_pb2.Data):
+  def parse(self,
+            config: config_pb2.YahooQuoteParserConfig,
+            fin_entity: data_pb2.Data,
+            activity: data_pb2.Data):
     if config.local_file_path:
       input = FileStream(config.local_file_path, encoding='utf-8')                                                     
     lexer = YahooQuoteLexer(input)                                                                    
@@ -145,4 +165,4 @@ class YahooQuoteParser:
     parser = AntlrParser(token)
     tree = parser.yahoo_quote()                                                                       
     walker = ParseTreeWalker()
-    walker.walk(self.Listener(data), tree)
+    walker.walk(self.Listener(fin_entity, activity), tree)

@@ -6,8 +6,8 @@ import "google/protobuf/timestamp.proto";
 
 // Represents geologic traits associated with a financial entity.
 message CommonTrait {
-  // A global unique ID for this finance entity.
-  int32 fin_entity_id = 1;
+  // Trading symbol
+  string symbol = 1;
 
   // Timestamp of inception and termination of this org.
   google.protobuf.Timestamp inception_timestamp = 2;
@@ -17,41 +17,4 @@ message CommonTrait {
   string business_summary = 4;
   string sector = 5;
   string industry = 6;
-  int32 num_full_time_employees = 7;
-
-  // Stock price related.
-  int64 market_cap = 8;
-  string symbol = 9;
-  string quote_type = 10;
-
-  // Financial data.
-  double current_price = 11;
-  double ebitda = 12;
-  double ebitda_margin = 13;
-  double profit_margin = 14;
-  double gross_margin = 15;
-  double operating_margin = 16;
-  double operating_cash_flow = 17;
-  double total_cash = 18;
-  double total_debt = 19;
-  double total_revenue = 20;
-  double gross_profit = 21;
-  double free_cash_flow = 22;
-  double revenue_growth = 23;
-  double earnings_growth = 24;
-  double target_low_price = 25;
-  double target_mean_price = 26;
-  double target_median_price = 27;
-  double target_high_price = 28;
-  int32 num_analyst_opinions = 29; 
-  string recommendation_key = 30;
-  double debt_to_equity = 31;
-  double return_on_assets = 32;
-  double return_on_equity = 33;
-  string currency = 34;
-  double earning_growth = 35;
-  double total_cash_per_share = 36;
-  double revenue_per_share = 37;
-  double current_ratio = 38;
-  double quick_ratio = 39;
 }

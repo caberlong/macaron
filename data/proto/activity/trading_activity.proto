@@ -6,12 +6,46 @@ import "data/proto/activity/activity_timestamp.proto";
 
 // Represents trading activity.
 message TradingActivity {
-  // A global unique ID for this finance entity.
-	int32 fin_entity_id = 1;
+  // Trading symbol.
+	string symbol = 1;
 
 	// Timestamp when activity happens.
 	ActivityTimestamp activity_timestamp = 2;
 
 	// Price of the trading.
-	float price = 3;
+	double price = 3;
+
+  int64 market_cap = 4;
+  string quote_type = 5;
+
+  // Financial data.
+  int32 num_full_time_employees = 6;
+  double earning_growth = 7;
+  double total_cash_per_share = 8;
+  double revenue_per_share = 9;
+  double current_ratio = 10;
+  double quick_ratio = 11;
+  double ebitda = 12;
+  double ebitda_margin = 13;
+  double profit_margin = 14;
+  double gross_margin = 15;
+  double operating_margin = 16;
+  double operating_cash_flow = 17;
+  double total_cash = 18;
+  double total_debt = 19;
+  double total_revenue = 20;
+  double gross_profit = 21;
+  double free_cash_flow = 22;
+  double revenue_growth = 23;
+  double earnings_growth = 24;
+  double target_low_price = 25;
+  double target_mean_price = 26;
+  double target_median_price = 27;
+  double target_high_price = 28;
+  int32 num_analyst_opinions = 29; 
+  string recommendation_key = 30;
+  double debt_to_equity = 31;
+  double return_on_assets = 32;
+  double return_on_equity = 33;
+  string currency = 34;
 }
