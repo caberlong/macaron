@@ -13,12 +13,12 @@ class DataProtoGenerator:
     pass
 
   class Listener(DataGeneratorParserListener):
-    def __init__(self, data: data_pb2.Data, overwrite: bool=None, var_values: dict={}):
+    def __init__(self, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
       self._scopes = [data]
       self._proto_paths = []
       self._var_values = var_values
       # overwrite the last instead of append a new one for repeated fields.
-      self._overwrite = overwrite
+      self._new_repeats = new_repeats
 
     def IsIntType(self, field_type):
       return (field_type == descriptor.FieldDescriptor.TYPE_INT64 or
@@ -55,7 +55,7 @@ class DataProtoGenerator:
       field = getattr(self._scopes[-1], field_name)
       field_descriptor = self._scopes[-1].DESCRIPTOR.fields_by_name[field_name]
       if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
-        if not len(field) or not self._overwrite: 
+        if not len(field) or (self._new_repeats and field_name in self._new_repeats): 
           message = message_factory.MessageFactory().GetPrototype(field_descriptor.message_type)()
           getattr(self._scopes[-1], field_name).append(message)
         self._scopes.append(field[-1])
@@ -110,11 +110,12 @@ class DataProtoGenerator:
       self._proto_paths.append(ctx.NAME().getText())
 
   def generateDataProto(
-      self, config: str, data: data_pb2.Data, overwrite: bool=None, var_values: dict={}):
+      self, config: str, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
+    """new_repeats: repeat fields that need to be newly created."""
     lexer = DataGeneratorLexer(InputStream(config))
     stream = CommonTokenStream(lexer)
     parser = DataGeneratorParser(stream)
     tree = parser.generateDataProto()
     walker = ParseTreeWalker();
-    listener = self.Listener(data=data, overwrite=overwrite, var_values=var_values);
+    listener = self.Listener(data=data, new_repeats=new_repeats, var_values=var_values);
     walker.walk(listener, tree);

@@ -16,3 +16,8 @@ filegroup(
     name = "yahoo_quote_goog_html",
     srcs = ["yahoo_quote_goog.html"],
 )
+
+filegroup(
+    name = "yahoo_quote_goog_history_html",
+    srcs = ["yahoo_quote_goog_history.html"],
+)

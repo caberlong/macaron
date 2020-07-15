@@ -10,94 +10,114 @@ from data.proto import data_pb2
 from macaron.data.utils import data_proto_generator
 
 SUMMARY_STORE = 'context.dispatcher.stores.QuoteSummaryStore'
+HISTORICAL_STORE = 'context.dispatcher.stores.HistoricalPriceStore'
 
 def _summaryStore(paths: list):
   return '.'.join([SUMMARY_STORE, '.'.join(paths)])
+
+def _historicalStore(paths: list):
+  return '.'.join([HISTORICAL_STORE, '.'.join(paths)])
 
 def _commonTraitConfig(config: str):
   return ('fin_entity { traits { common_trait { %s } } }' % config, data_pb2.Data.FIN_ENTITY)
 
 def _tradingActivityConfig(config: str):
   return ('timeline { activities { trading_activity { %s } } }' % config, data_pb2.Data.TIMELINE)
+
+def _historicalPriceConfig(config: str):
+  return ('timeline { activities { trading_activity { historical_prices { %s } } } }'
+          % config, data_pb2.Data.TIMELINE)
     
 # Key: json path 
 # Value: (config, overwrite)
 _jsonKeyToGeneratorConfigMap = { 
   # profile
   _summaryStore(['summaryProfile', 'longBusinessSummary']):
-    (_commonTraitConfig('business_summary : $STRING;'), True),
+    (_commonTraitConfig('business_summary : $STRING;'), None),
   _summaryStore(['summaryProfile', 'sector']):
-    (_commonTraitConfig('sector : $STRING;'), True),
+    (_commonTraitConfig('sector : $STRING;'), None),
   _summaryStore(['summaryProfile', 'industry']):
-    (_commonTraitConfig('industry : $STRING;'), True),
+    (_commonTraitConfig('industry : $STRING;'), None),
 
   # trading activity
   _summaryStore(['summaryProfile', 'fullTimeEmployees']):
-    (_tradingActivityConfig('num_full_time_employees : $NUMBER;'), True),
+    (_tradingActivityConfig('num_full_time_employees : $NUMBER;'), None),
   _summaryStore(['price', 'marketCap', 'raw']):
-    (_tradingActivityConfig('market_cap : $NUMBER;'), True),
+    (_tradingActivityConfig('market_cap : $NUMBER;'), None),
   _summaryStore(['price', 'symbol']):
-    (_tradingActivityConfig('symbol : $STRING;'), True),
+    (_tradingActivityConfig('symbol : $STRING;'), None),
   _summaryStore(['price', 'quoteType']):
-    (_tradingActivityConfig('quote_type : $STRING;'), True),
+    (_tradingActivityConfig('quote_type : $STRING;'), None),
   _summaryStore(['financialData', 'currentPrice', 'raw']):
-    (_tradingActivityConfig('price : $NUMBER;'), True),
+    (_tradingActivityConfig('price : $NUMBER;'), None),
   _summaryStore(['financialData', 'profitMargins', 'raw']):
-    (_tradingActivityConfig('profit_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('profit_margin : $NUMBER;'), None),
   _summaryStore(['financialData', 'grossMargins', 'raw']):
-    (_tradingActivityConfig('gross_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('gross_margin : $NUMBER;'), None),
   _summaryStore(['financialData', 'operatingMargins', 'raw']):
-    (_tradingActivityConfig('operating_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('operating_margin : $NUMBER;'), None),
   _summaryStore(['financialData', 'operatingCashflow', 'raw']):
-    (_tradingActivityConfig('operating_cash_flow : $NUMBER;'), True),
+    (_tradingActivityConfig('operating_cash_flow : $NUMBER;'), None),
   _summaryStore(['financialData', 'ebitdaMargins', 'raw']):
-    (_tradingActivityConfig('ebitda_margin : $NUMBER;'), True),
+    (_tradingActivityConfig('ebitda_margin : $NUMBER;'), None),
   _summaryStore(['financialData', 'ebitda', 'raw']):
-    (_tradingActivityConfig('ebitda : $NUMBER;'), True),
+    (_tradingActivityConfig('ebitda : $NUMBER;'), None),
   _summaryStore(['financialData', 'totalCash', 'raw']):
-    (_tradingActivityConfig('total_cash : $NUMBER;'), True),
+    (_tradingActivityConfig('total_cash : $NUMBER;'), None),
   _summaryStore(['financialData', 'totalDebt', 'raw']):
-    (_tradingActivityConfig('total_debt : $NUMBER;'), True),
+    (_tradingActivityConfig('total_debt : $NUMBER;'), None),
   _summaryStore(['financialData', 'totalRevenue', 'raw']):
-    (_tradingActivityConfig('total_revenue : $NUMBER;'), True),
+    (_tradingActivityConfig('total_revenue : $NUMBER;'), None),
   _summaryStore(['financialData', 'grossProfits', 'raw']):
-    (_tradingActivityConfig('gross_profit : $NUMBER;'), True),
+    (_tradingActivityConfig('gross_profit : $NUMBER;'), None),
   _summaryStore(['financialData', 'freeCashflow', 'raw']):
-    (_tradingActivityConfig('free_cash_flow : $NUMBER;'), True),
+    (_tradingActivityConfig('free_cash_flow : $NUMBER;'), None),
   _summaryStore(['financialData', 'revenueGrowth', 'raw']):
-    (_tradingActivityConfig('revenue_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('revenue_growth : $NUMBER;'), None),
   _summaryStore(['financialData', 'earningsGrowth', 'raw']):
-    (_tradingActivityConfig('earnings_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('earnings_growth : $NUMBER;'), None),
   _summaryStore(['financialData', 'numberOfAnalystOpinions', 'raw']):
-    (_tradingActivityConfig('num_analyst_opinions : $NUMBER;'), True),
+    (_tradingActivityConfig('num_analyst_opinions : $NUMBER;'), None),
   _summaryStore(['financialData', 'targetLowPrice', 'raw']):
-    (_tradingActivityConfig('target_low_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_low_price : $NUMBER;'), None),
   _summaryStore(['financialData', 'targetMeanPrice', 'raw']):
-    (_tradingActivityConfig('target_mean_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_mean_price : $NUMBER;'), None),
   _summaryStore(['financialData', 'targetMedianPrice', 'raw']):
-    (_tradingActivityConfig('target_median_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_median_price : $NUMBER;'), None),
   _summaryStore(['financialData', 'targetHighPrice', 'raw']):
-    (_tradingActivityConfig('target_high_price : $NUMBER;'), True),
+    (_tradingActivityConfig('target_high_price : $NUMBER;'), None),
   _summaryStore(['financialData', 'recommendationKey']):
-    (_tradingActivityConfig('recommendation_key : $STRING;'), True),
+    (_tradingActivityConfig('recommendation_key : $STRING;'), None),
   _summaryStore(['financialData', 'debtToEquity', 'raw']):
-    (_tradingActivityConfig('debt_to_equity : $NUMBER;'), True),
+    (_tradingActivityConfig('debt_to_equity : $NUMBER;'), None),
   _summaryStore(['financialData', 'returnOnAssets', 'raw']):
-    (_tradingActivityConfig('return_on_assets : $NUMBER;'), True),
+    (_tradingActivityConfig('return_on_assets : $NUMBER;'), None),
   _summaryStore(['financialData', 'returnOnEquity', 'raw']):
-    (_tradingActivityConfig('return_on_equity : $NUMBER;'), True),
+    (_tradingActivityConfig('return_on_equity : $NUMBER;'), None),
   _summaryStore(['financialData', 'financialCurrency']):
-    (_tradingActivityConfig('currency : $STRING;'), True),
+    (_tradingActivityConfig('currency : $STRING;'), None),
   _summaryStore(['financialData', 'earningsGrowth', 'raw']):
-    (_tradingActivityConfig('earning_growth : $NUMBER;'), True),
+    (_tradingActivityConfig('earning_growth : $NUMBER;'), None),
   _summaryStore(['financialData', 'totalCashPerShare', 'raw']):
-    (_tradingActivityConfig('total_cash_per_share : $NUMBER;'), True),
+    (_tradingActivityConfig('total_cash_per_share : $NUMBER;'), None),
   _summaryStore(['financialData', 'revenuePerShare', 'raw']):
-    (_tradingActivityConfig('revenue_per_share : $NUMBER;'), True),
+    (_tradingActivityConfig('revenue_per_share : $NUMBER;'), None),
   _summaryStore(['financialData', 'currentRatio', 'raw']):
-    (_tradingActivityConfig('current_ratio : $NUMBER;'), True),
+    (_tradingActivityConfig('current_ratio : $NUMBER;'), None),
   _summaryStore(['financialData', 'quickRatio', 'raw']):
-    (_tradingActivityConfig('quick_ratio : $NUMBER;'), True),
+    (_tradingActivityConfig('quick_ratio : $NUMBER;'), None),
+  _historicalStore(['prices', 'date']):
+    (_historicalPriceConfig('date : $NUMBER;'), {'historical_prices': None}),
+  _historicalStore(['prices', 'open']):
+    (_historicalPriceConfig('open : $NUMBER;'), None),
+  _historicalStore(['prices', 'high']):
+    (_historicalPriceConfig('high : $NUMBER;'), None),
+  _historicalStore(['prices', 'low']):
+    (_historicalPriceConfig('low : $NUMBER;'), None),
+  _historicalStore(['prices', 'close']):
+    (_historicalPriceConfig('close : $NUMBER;'), None),
+  _historicalStore(['prices', 'volume']):
+    (_historicalPriceConfig('volume : $NUMBER;'), None),
 }
                                                                                                     
 class YahooQuoteParser:
@@ -119,31 +139,35 @@ class YahooQuoteParser:
                                                                                                       
     def enterValue(self, ctx:AntlrParser.ValueContext):                                          
       if ctx.TRUE() or ctx.FALSE() or ctx.NULL():
+        # print('%s: %s' % ('.'.join(self._keys), ctx.getText()))
         return
       if ctx.STRING():                                                                                
+        # print('%s: %s' % ('.'.join(self._keys), ctx.getText()))
         self.populateStringValues(ctx.STRING().getText()[1:-1])
+        return
       if ctx.NUMBER():                                                                                
+        # print('%s: %s' % ('.'.join(self._keys), ctx.getText()))
         self.populateNumberValues(ctx.NUMBER().getText())
         return
 
     def populateStringValues(self, value: str):
-      ((config, data_type), overwrite) = _jsonKeyToGeneratorConfigMap.get(
+      ((config, data_type), new_repeats) = _jsonKeyToGeneratorConfigMap.get(
           '.'.join(self._keys), ((None, None), None))
       if config:
         self._generator.generateDataProto(
             config=config,
             data=self.getDataByType(data_type),
-            overwrite=overwrite,
+            new_repeats=new_repeats,
             var_values={'STRING':value})
 
     def populateNumberValues(self, value: str):
-      ((config, data_type), overwrite) = _jsonKeyToGeneratorConfigMap.get(
+      ((config, data_type), new_repeats) = _jsonKeyToGeneratorConfigMap.get(
           '.'.join(self._keys), ((None, None), None))
       if config:
         self._generator.generateDataProto(
             config=config,
             data=self.getDataByType(data_type),
-            overwrite=overwrite,
+            new_repeats=new_repeats,
             var_values={'NUMBER':value})
 
     def getDataByType(self, data_type: data_pb2.Data.DataType):
