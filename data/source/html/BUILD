@@ -35,3 +35,20 @@ py_binary(
         "@com_google_protobuf//:protobuf_python",
     ],
 )
+
+py_library(
+    name = "yahoo_quote_downloader",
+    srcs = ["yahoo_quote_downloader.py"],
+    deps = [
+        "//data/proto:data_python_proto",
+    ],
+)
+
+py_binary(
+    name = "yahoo_quote_downloader_test",
+    srcs = ["yahoo_quote_downloader_test.py"],
+    deps = [
+        ":yahoo_quote_downloader",
+        "//data/proto:data_python_proto",
+    ],
+)

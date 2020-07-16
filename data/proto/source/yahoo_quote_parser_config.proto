@@ -9,16 +9,16 @@ message YahooQuoteParserConfig {
 
   // Page types for Yahoo quote.
   enum PageType { 
-    UNKNOWN = 0;
-    SUMMARY = 1;
-    HISTORY = 2;
-    STATISTICS = 3;
-    PROFILE = 4;
-    ANALYSIS = 5;
+    UNKNOWN_PAGE = 0;
+    SUMMARY_PAGE = 1;
+    HISTORY_PAGE = 2;
+    STATISTICS_PAGE = 3;
+    PROFILE_PAGE = 4;
+    ANALYSIS_PAGE = 5;
   }
 
   // The page to obtain information from.
-  PageType page_type = 2;
+  repeated PageType page_types = 2;
 
   // If set, read data from this local file path instead of online.
   string local_file_path = 3;
