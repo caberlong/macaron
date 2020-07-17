@@ -1,4 +1,5 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@subpar//:subpar.bzl", "par_binary")
 
 py_library(
     name = "yahoo_quote_parser",
@@ -6,7 +7,7 @@ py_library(
     imports = ["../../antlr/yahoo_quote/yahoo_quote_antlr.py"],
     deps = [
 				"//data/antlr/yahoo_quote:yahoo_quote_antlr_py",
-        "//data/proto:data_python_proto",
+        "//proto:data_python_proto",
         "//data/utils:data_proto_generator",
         "@antlr4_runtimes//:python",
     ],
@@ -31,7 +32,7 @@ py_binary(
     ],
     deps = [
         ":yahoo_quote_parser",
-        "//data/proto:data_python_proto",
+        "//proto:data_python_proto",
         "@com_google_protobuf//:protobuf_python",
     ],
 )
@@ -40,7 +41,7 @@ py_library(
     name = "yahoo_quote_downloader",
     srcs = ["yahoo_quote_downloader.py"],
     deps = [
-        "//data/proto:data_python_proto",
+        "//proto:data_python_proto",
     ],
 )
 
@@ -49,6 +50,16 @@ py_binary(
     srcs = ["yahoo_quote_downloader_test.py"],
     deps = [
         ":yahoo_quote_downloader",
-        "//data/proto:data_python_proto",
+        "//proto:data_python_proto",
+    ],
+)
+
+par_binary(
+    name = "yahoo_quote_downloader_run",
+    srcs = ["yahoo_quote_downloader_run.py"],
+    imports = ["."],
+    deps = [
+        ":yahoo_quote_downloader",
+        "//proto:data_python_proto",
     ],
 )

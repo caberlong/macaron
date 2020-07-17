@@ -2,8 +2,8 @@ import sys
 import importlib
 
 from google.protobuf import text_format
-from data.proto import data_pb2
-from data.proto import data_source_config_pb2
+from proto import data_pb2
+from proto import data_source_config_pb2
 
 
 class GenericDataGenerator:

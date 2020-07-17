@@ -2,9 +2,9 @@ import sys
 
 from google.protobuf import text_format
 
-from data.proto.source import yahoo_quote_parser_config_pb2
-from data.proto import data_pb2
-from macaron.data.source.html import yahoo_quote_parser
+from proto.source import yahoo_quote_parser_config_pb2
+from proto import data_pb2
+from data.source.html import yahoo_quote_parser
 
 
 def main(argv):

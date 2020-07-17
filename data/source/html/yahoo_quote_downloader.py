@@ -7,20 +7,23 @@ import tqdm
 from datetime import date
 from multiprocessing import Pool
 
-from data.proto.source import yahoo_quote_parser_config_pb2 as config_pb2
+from proto.source import yahoo_quote_parser_config_pb2 as config_pb2
 
 class YahooQuoteDownloader:
-  def __init__(self, root_dir):
+  def __init__(self, root_dir: list, dry_run: bool=False):
     self._num_processes = 4;
     self._address_prefix = "https://finance.yahoo.com/quote"
     self._root_dir = '/'.join([root_dir, '%s' % date.today()])
+    self._dry_run = dry_run
 
   def download_one(self, one: tuple):
     (tick, page_type, address) = one
     r = requests.get(address, allow_redirects=True)
-    os.makedirs(self._root_dir, exist_ok=True)
     path = '/'.join([self._root_dir, '.'.join([tick, page_type, 'html'])])
-    print('write to path: %s' % path)
+    if self._dry_run:
+      print('get %s and write to %s' % (address, path))
+      return
+    os.makedirs(self._root_dir, exist_ok=True)
     try:
       open(path, 'w').write(r.text)
     except e:

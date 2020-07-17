@@ -8,7 +8,7 @@ py_library(
     name = "generic_data_generator",
     srcs = ["generic_data_generator.py"],
 		deps = [
-			"//data/proto:data_python_proto",
+			"//proto:data_python_proto",
 			"@com_google_protobuf//:protobuf_python",
 		]
 )                                                                                                   
@@ -19,6 +19,6 @@ py_binary(
     deps = [                                                                                        
       ":generic_data_generator",                                                        
 			"//data/utils:data_proto_generator",
-			"//data/proto:data_python_proto",
+			"//proto:data_python_proto",
     ],                                                                                              
 )

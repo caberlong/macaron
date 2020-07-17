@@ -2,7 +2,7 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/activity/activity_timestamp.proto";
+import "proto/activity/activity_timestamp.proto";
 
 // Represents trading activity.
 message TradingActivity {

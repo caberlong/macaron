@@ -2,7 +2,7 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/activity/activity.proto";
+import "proto/activity/activity.proto";
 import "google/protobuf/timestamp.proto";
 
 // Represents timeline of activities of a financial org.

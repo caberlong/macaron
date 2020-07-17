@@ -2,7 +2,7 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/trait/trait.proto";
+import "proto/trait/trait.proto";
 
 // Represents a finance entity.
 message FinEntity {

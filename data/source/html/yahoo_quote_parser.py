@@ -5,9 +5,9 @@ from YahooQuoteLexer import YahooQuoteLexer
 from YahooQuoteParser import YahooQuoteParser as AntlrParser
 from YahooQuoteParserListener import YahooQuoteParserListener                                       
 
-from data.proto.source import yahoo_quote_parser_config_pb2 as config_pb2
-from data.proto import data_pb2
-from macaron.data.utils import data_proto_generator
+from proto.source import yahoo_quote_parser_config_pb2 as config_pb2
+from proto import data_pb2
+from data.utils import data_proto_generator
 
 SUMMARY_STORE = 'context.dispatcher.stores.QuoteSummaryStore'
 HISTORICAL_STORE = 'context.dispatcher.stores.HistoricalPriceStore'

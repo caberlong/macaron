@@ -56,3 +56,11 @@ load("@rules_antlr//antlr:lang.bzl", "C", "CPP", "GO", "JAVA", "OBJC", "PYTHON",
 load("@rules_antlr//antlr:repositories.bzl", "rules_antlr_dependencies")                            
                                                                                                     
 rules_antlr_dependencies("2.7.7", 3, "4.8", C, CPP, GO, OBJC, PYTHON, PYTHON2)
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository") 
+
+git_repository(
+    name = "subpar",
+    remote = "https://github.com/google/subpar",
+    tag = "1.0.0",
+)

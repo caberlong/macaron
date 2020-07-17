@@ -3,7 +3,7 @@ from antlr4 import *
 from DataGeneratorLexer import DataGeneratorLexer
 from DataGeneratorParser import DataGeneratorParser
 from DataGeneratorParserListener import DataGeneratorParserListener
-from data.proto import data_pb2
+from proto import data_pb2
 from google.protobuf import message_factory
 from google.protobuf import descriptor
 

@@ -1,6 +1,7 @@
 package_group(
 	name = "data_consumer",
 	packages = [
-		"//data/..."
+		"//data/...",
+		"//proto/...",
 	],
 )

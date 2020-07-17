@@ -2,10 +2,10 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/activity/activity_timestamp.proto";
+import "proto/activity/activity_timestamp.proto";
 
-// Represents timeline of activities of a financial org.
-message EarningActivity {
+// Represents reorg of activities of a financial org.
+message ReorgActivity {
   // A global unique ID for this finance entity.
 	int32 fin_entity_id = 1;
 

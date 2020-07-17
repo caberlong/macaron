@@ -1,7 +1,7 @@
 import sys
-from macaron.data.source import generic_data_generator
-from macaron.data.utils import data_proto_generator
-from data.proto import data_pb2                                                                     
+from data.source import generic_data_generator
+from data.utils import data_proto_generator
+from proto import data_pb2                                                                     
 
 
 class TestDataGenerator:

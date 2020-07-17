@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package caber.macaron;
 
-import "data/proto/trait/common_trait.proto";
-import "data/proto/trait/geo_trait.proto";
-import "data/proto/trait/demo_trait.proto";
-import "data/proto/trait/sector_trait.proto";
+import "proto/trait/common_trait.proto";
+import "proto/trait/geo_trait.proto";
+import "proto/trait/demo_trait.proto";
+import "proto/trait/sector_trait.proto";
 
 // Represents a finance entity.
 message Trait {

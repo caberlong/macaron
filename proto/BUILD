@@ -12,14 +12,14 @@ python_proto_library(
       ":timeline_proto",
       ":data_proto",
       ":data_source_config_proto",
-      "//data/proto/source:yahoo_quote_parser_config_proto"
+      "//proto/source:yahoo_quote_parser_config_proto"
     ],
 )
 
 proto_library(                                                                                      
     name = "fin_entity_proto",                                                                     
     srcs = ["fin_entity.proto"],                                                                   
-    deps = ["//data/proto/trait:trait_proto"]
+    deps = ["//proto/trait:trait_proto"]
 )                                                                                                   
                                                                                                     
 cc_proto_library(                                                                                   
@@ -31,7 +31,7 @@ proto_library(
     name = "timeline_proto",                                                                     
     srcs = ["timeline.proto"],                                                                   
     deps = [
-			"//data/proto/activity:activity_proto",
+			"//proto/activity:activity_proto",
 			"@com_google_protobuf//:timestamp_proto",
 		]
 )                                                                                                   

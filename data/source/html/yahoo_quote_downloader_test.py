@@ -1,8 +1,8 @@
 import sys
 
-from data.proto.source import yahoo_quote_parser_config_pb2 as config_pb2
-from data.proto import data_pb2
-from macaron.data.source.html import yahoo_quote_downloader
+from proto.source import yahoo_quote_parser_config_pb2 as config_pb2
+from proto import data_pb2
+from data.source.html import yahoo_quote_downloader
 
 def getConfigs(ticks: list):
   configs = []
@@ -22,7 +22,7 @@ def getConfigs(ticks: list):
 def main(argv):
   downloader = yahoo_quote_downloader.YahooQuoteDownloader('/tmp/macaron')
   downloader.download(getConfigs([
-      'MSFT', 'GOOG', 'AMZN', 'TSLA', 'GDX', 'GLD'
+      'MSFT', 'GOOG', 'AMZN',
   ]))
 
 

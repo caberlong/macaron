@@ -1,6 +1,6 @@
 import sys
 from macaron.data.utils.data_proto_generator import DataProtoGenerator
-from data.proto import data_pb2
+from proto import data_pb2
 
 
 def main(argv):

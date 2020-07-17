@@ -2,8 +2,8 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "data/proto/fin_entity.proto";
-import "data/proto/timeline.proto";
+import "proto/fin_entity.proto";
+import "proto/timeline.proto";
 
 // Storage proto wrapper for all data types.
 message Data {
