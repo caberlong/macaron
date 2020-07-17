@@ -135,3 +135,5 @@ bazel-out
 bazel-testlogs
 bazel-tools
 *.swp
+
+bin
