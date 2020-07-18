@@ -57,9 +57,16 @@ py_binary(
 par_binary(
     name = "yahoo_quote_downloader_run",
     srcs = ["yahoo_quote_downloader_run.py"],
-    imports = ["."],
     deps = [
         ":yahoo_quote_downloader",
         "//proto:data_python_proto",
+    ],
+)
+
+par_binary(
+    name = "yahoo_quote_parser_run",
+    srcs = ["yahoo_quote_parser_run.py"],
+    deps = [
+        ":yahoo_quote_parser",
     ],
 )

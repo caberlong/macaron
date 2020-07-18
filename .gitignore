@@ -137,3 +137,4 @@ bazel-tools
 *.swp
 
 bin
+data/store
