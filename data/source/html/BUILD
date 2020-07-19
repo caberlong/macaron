@@ -4,7 +4,7 @@ load("@subpar//:subpar.bzl", "par_binary")
 py_library(
     name = "yahoo_quote_parser",
     srcs = ["yahoo_quote_parser.py"],
-    imports = ["../../antlr/yahoo_quote/yahoo_quote_antlr.py"],
+    # imports = ["../../antlr/yahoo_quote/yahoo_quote_antlr.py"],
     deps = [
 				"//data/antlr/yahoo_quote:yahoo_quote_antlr_py",
         "//proto:data_python_proto",
@@ -63,7 +63,8 @@ par_binary(
     ],
 )
 
-par_binary(
+# TODO: change this to par_binary after fix the bug.
+py_binary(
     name = "yahoo_quote_parser_run",
     srcs = ["yahoo_quote_parser_run.py"],
     deps = [

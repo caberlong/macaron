@@ -16,7 +16,7 @@ json_line
 		;
 
 other_line
-		: ~ROOT_APP_MAIN WORD* NEWLINE
+		: ~ROOT_APP_MAIN WORD* (NEWLINE|EOF)
 		;
 
 json

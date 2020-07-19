@@ -19,14 +19,13 @@ def _historicalStore(paths: list):
   return '.'.join([HISTORICAL_STORE, '.'.join(paths)])
 
 def _commonTraitConfig(config: str):
-  return ('fin_entity { traits { common_trait { %s } } }' % config, data_pb2.Data.FIN_ENTITY)
+  return 'timelines { fin_entity { traits { common_trait { %s } } } }' % config
 
 def _tradingActivityConfig(config: str):
-  return ('timeline { activities { trading_activity { %s } } }' % config, data_pb2.Data.TIMELINE)
+  return 'timelines { activities { trading_activity { %s } } }' % config
 
 def _historicalPriceConfig(config: str):
-  return ('timeline { activities { trading_activity { historical_prices { %s } } } }'
-          % config, data_pb2.Data.TIMELINE)
+  return 'timelines { activities { trading_activity { historical_prices { %s } } } }' % config
     
 # Key: json path 
 # Value: (config, overwrite)
@@ -125,10 +124,9 @@ class YahooQuoteParser:
     pass
 
   class Listener(YahooQuoteParserListener):                                                      
-    def __init__(self, fin_entity: data_pb2.Data, activity: data_pb2.Data):
+    def __init__(self, data: data_pb2.Data):
       self._keys = []
-      self._fin_entity = fin_entity
-      self._activity = activity
+      self._data = data
       self._generator = data_proto_generator.DataProtoGenerator()
                                                                                                       
     def enterPair(self, ctx:AntlrParser.PairContext):                                            
@@ -151,37 +149,28 @@ class YahooQuoteParser:
         return
 
     def populateStringValues(self, value: str):
-      ((config, data_type), new_repeats) = _jsonKeyToGeneratorConfigMap.get(
-          '.'.join(self._keys), ((None, None), None))
+      (config, new_repeats) = _jsonKeyToGeneratorConfigMap.get(
+          '.'.join(self._keys), (None, None))
       if config:
         self._generator.generateDataProto(
             config=config,
-            data=self.getDataByType(data_type),
+            data=self._data,
             new_repeats=new_repeats,
             var_values={'STRING':value})
 
     def populateNumberValues(self, value: str):
-      ((config, data_type), new_repeats) = _jsonKeyToGeneratorConfigMap.get(
-          '.'.join(self._keys), ((None, None), None))
+      (config, new_repeats) = _jsonKeyToGeneratorConfigMap.get(
+          '.'.join(self._keys), (None, None))
       if config:
         self._generator.generateDataProto(
             config=config,
-            data=self.getDataByType(data_type),
+            data=self._data,
             new_repeats=new_repeats,
             var_values={'NUMBER':value})
 
-    def getDataByType(self, data_type: data_pb2.Data.DataType):
-      if data_type == data_pb2.Data.FIN_ENTITY:
-        return self._fin_entity
-      if data_type == data_pb2.Data.TIMELINE:
-        return self._activity
-      raise
-        
-                                                                                                      
   def parse(self,
             config: config_pb2.YahooQuoteParserConfig,
-            fin_entity: data_pb2.Data,
-            activity: data_pb2.Data):
+            data: data_pb2.Data):
     if config.local_file_path:
       input = FileStream(config.local_file_path, encoding='utf-8')                                                     
     lexer = YahooQuoteLexer(input)                                                                    
@@ -189,4 +178,4 @@ class YahooQuoteParser:
     parser = AntlrParser(token)
     tree = parser.yahoo_quote()                                                                       
     walker = ParseTreeWalker()
-    walker.walk(self.Listener(fin_entity, activity), tree)
+    walker.walk(self.Listener(data), tree)

@@ -12,14 +12,21 @@ PAGE_TYPES = set(['SUMMARY_PAGE', 'HISTORY_PAGE'])
 def parseOne(one_tick:tuple):
   (dir_proto, date, tick, paths) = one_tick
   parser = yahoo_quote_parser.YahooQuoteParser()
-  fin_entity = data_pb2.Data()
-  activity = data_pb2.Data()
+  data = data_pb2.Data()
   config = config_pb2.YahooQuoteParserConfig()
   for path in paths:
     config.local_file_path = path
-    parser.parse(config, fin_entity, activity)
-  # print('fin_entity\n%s' % fin_entity)
-  # print('activity\n%s' % activity)
+    parser.parse(config, data)
+  parent_dir = '/'.join([dir_proto, date])
+  os.makedirs(parent_dir, exist_ok=True)
+  file_name = '.'.join(tick, 'proto')
+  path = '/'.join([parent_dir, file_name])
+  try:
+    f = open(path, "wb")
+    f.write(data.SerializeToString())
+    f.close()
+  except e:
+    print(e)
 
 def getRawHtmlsInOneDate(dir_raw:str, dir_proto:str, date:str, raws:list):
   htmls = [(f.name, f.path) for f in os.scandir('/'.join([dir_raw, date])) if f.is_file]

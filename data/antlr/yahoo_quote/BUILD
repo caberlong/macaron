@@ -16,13 +16,13 @@ antlr(
                                                                                                     
 py_library(                                                                                         
     name = "yahoo_quote_antlr_py",                                                                                   
+    imports = ["yahoo_quote_antlr.py"],                                                 
     srcs = [":yahoo_quote_antlr"],                                                                          
 )                                                                                                   
 
 py_binary(                                                                                          
     name = "yahoo_quote_test",                                                               
     srcs = ["yahoo_quote_test.py"],                                                          
-    imports = ["yahoo_quote_antlr.py"],                                                 
     # data = ["//data/antlr/yahoo_quote/testdata:yahoo_quote_gspc_html"],                                 
     # args = ["$(location //data/antlr/yahoo_quote/testdata:yahoo_quote_gspc_html)"],                     
     data = ["//data/antlr/yahoo_quote/testdata:yahoo_quote_microsoft_html"],                              

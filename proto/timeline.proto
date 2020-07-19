@@ -2,13 +2,14 @@ syntax = "proto3";
   
 package caber.macaron;
 
+import "proto/fin_entity.proto";
 import "proto/activity/activity.proto";
 import "google/protobuf/timestamp.proto";
 
 // Represents timeline of activities of a financial org.
 message Timeline {
   // A global unique ID for this finance organization.
-	int32 fin_entity_id = 1;
+	FinEntity fin_entity = 1;
 
 	// start and end timestamp for this timeline. Specifically, the range can be denoted as
 	// [start_timestamp_usec, end_timestamp_usec).

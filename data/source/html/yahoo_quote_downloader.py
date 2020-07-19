@@ -25,7 +25,9 @@ class YahooQuoteDownloader:
       return
     os.makedirs(self._root_dir, exist_ok=True)
     try:
-      open(path, 'w').write(r.text)
+      f = open(path, 'w')
+      f.write(r.text)
+      f.close()
     except e:
       print(e)
 

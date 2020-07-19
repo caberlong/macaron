@@ -2,21 +2,9 @@ syntax = "proto3";
   
 package caber.macaron;
 
-import "proto/fin_entity.proto";
 import "proto/timeline.proto";
 
 // Storage proto wrapper for all data types.
 message Data {
-	oneof Kind {
-		FinEntity fin_entity = 1;
-		Timeline timeline = 2;
-	}
-
-  enum DataType {
-    UNKNOWN = 0;
-    FIN_ENTITY = 1; 
-    TIMELINE = 2;
-  }
+  repeated Timeline timelines = 1;
 }
-
-

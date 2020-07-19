@@ -17,7 +17,8 @@ def main(argv):
       'class_name: "macaron.data.source.generic_data_generator_test.TestDataGenerator"')
 
   data = data_pb2.Data()
-  data_source.populate_data('fin_entity { name: "test_name"; }', data)
+  data_source.populate_data('timelines { fin_entity { name: "test_name"; } }', data)
+  print('result: %s' % data)
 
 
 if __name__ == '__main__':

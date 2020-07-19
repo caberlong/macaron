@@ -31,6 +31,7 @@ proto_library(
     name = "timeline_proto",                                                                     
     srcs = ["timeline.proto"],                                                                   
     deps = [
+      ":fin_entity_proto",
 			"//proto/activity:activity_proto",
 			"@com_google_protobuf//:timestamp_proto",
 		]
