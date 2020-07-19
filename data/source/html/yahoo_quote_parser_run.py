@@ -19,7 +19,7 @@ def parseOne(one_tick:tuple):
     parser.parse(config, data)
   parent_dir = '/'.join([dir_proto, date])
   os.makedirs(parent_dir, exist_ok=True)
-  file_name = '.'.join(tick, 'proto')
+  file_name = '.'.join([tick, 'proto'])
   path = '/'.join([parent_dir, file_name])
   try:
     f = open(path, "wb")
@@ -52,6 +52,7 @@ def getRawHtmlsToParse(dir_raw:str, dir_proto:str):
   for date in raw_dates:
     if date in proto_dates:
       continue
+    print('Parsing raw html for %s' % date)
     getRawHtmlsInOneDate(dir_raw, dir_proto, date, raws)
   return raws
 
