@@ -1,11 +1,13 @@
 input_string = "input_x" ;
 var1 = 2 ;
 var2 = $var1 + 20;
+input_proto = "sample_proto";
 sub_proto1 {
 	sub_proto2 {
 		nested_field1 : ("prefix" + $input_string) + "suffix";
 	}
 	nested_field2.sub_field3 : 3*10*($var2 - 5.2) + 20;
+  nested_field2.nested_field3.sub_field4 : $input_proto.path1.path2;
 }
 field1: (1+2) * 3;
 field2: "my string field";

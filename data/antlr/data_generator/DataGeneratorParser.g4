@@ -41,5 +41,5 @@ expr
 		; 
 
 refVar
-		: DOLLAR NAME
+		: DOLLAR protoPath
 		;
