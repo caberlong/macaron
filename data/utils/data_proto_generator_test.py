@@ -7,8 +7,16 @@ def main(argv):
   data_proto = data_pb2.Data()
   generator = DataProtoGenerator()
   generator.generateDataProto(
-      'fin_entity { traits { common_trait { sector : "software"; } } }', data_proto)
-  print('data_proto: %s' % data_proto)
+      'timelines { fin_entity { traits { common_trait.sector : "software"; } } }', data_proto)
+
+  data_proto2 = data_pb2.Data()
+  generator2 = DataProtoGenerator()
+  generator2.generateDataProto(
+    'timelines { fin_entity { traits { ' + 
+    'common_trait.sector : $INPUT.timelines.fin_entity.traits.common_trait.sector ; } } }',
+     data_proto2,
+    var_values = {'INPUT': data_proto})
+  print('data_proto2: %s' % data_proto2)
 
 
 if __name__ == '__main__':

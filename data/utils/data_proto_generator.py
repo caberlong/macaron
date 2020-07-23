@@ -15,7 +15,6 @@ class DataProtoGenerator:
   class Listener(DataGeneratorParserListener):
     def __init__(self, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
       self._scopes = [data]
-      self._proto_paths = []
       self._var_values = var_values
       # overwrite the last instead of append a new one for repeated fields.
       self._new_repeats = new_repeats
@@ -36,19 +35,27 @@ class DataProtoGenerator:
       return (field_type == descriptor.FieldDescriptor.TYPE_FLOAT or
           field_type == descriptor.FieldDescriptor.TYPE_DOUBLE)
 
-    def setFieldValue(self, value):
-      scope_field = self._scopes[-1]
-      for path in self._proto_paths[:-1]:
-        scope_field = getattr(scope_field, path)
-
-      field_name = self._proto_paths[-1]
-      field_descriptor = scope_field.DESCRIPTOR.fields_by_name[field_name]
-      if self.IsIntType(field_descriptor.type):
-        setattr(scope_field, field_name, int(value))
-      elif self.IsFloatType(field_descriptor.type):
-        setattr(scope_field, field_name, float(value))
+    def getProtoPathFields(self, parent, ctx:DataGeneratorParser.ProtoPathContext, results:list):
+      if ctx.protoPath() == None:
+        results.append((parent, ctx.NAME().getText()))
+        return
+      field_name = ctx.NAME().getText()
+      field = getattr(parent, field_name)
+      field_descriptor = parent.DESCRIPTOR.fields_by_name[field_name]
+      if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
+        for f in field:
+          self.getProtoPathFields(f, ctx.protoPath(), results)
       else:
-        setattr(scope_field, field_name, value)
+        self.getProtoPathFields(field, ctx.protoPath(), results)
+
+    def setFieldValue(self, parent, field_name, value):
+      field_descriptor = parent.DESCRIPTOR.fields_by_name[field_name]
+      if self.IsIntType(field_descriptor.type):
+        setattr(parent, field_name, int(value))
+      elif self.IsFloatType(field_descriptor.type):
+        setattr(parent, field_name, float(value))
+      else:
+        setattr(parent, field_name, value)
 
     def pushScope(self, field_name):
       """push the field message as the current scope."""
@@ -85,7 +92,17 @@ class DataProtoGenerator:
       raise
 
     def evalRefVar(self, refVar):
-      return self._var_values[refVar.NAME().getText()]
+      result = self._var_values[refVar.protoPath().NAME().getText()]
+      if refVar.protoPath().protoPath() == None:
+        return result
+      fields = [];
+      self.getProtoPathFields(result, refVar.protoPath().protoPath(), fields)
+      results = [];
+      for parent, field_name in fields:
+        results.append(getattr(parent, field_name))
+      if len(results) == 1:
+        return results[0]
+      return results
 
     # Exit a parse tree produced by DataGeneratorParser#assignVariable.                             
     def exitAssignVariable(self, ctx:DataGeneratorParser.AssignVariableContext):                    
@@ -100,15 +117,13 @@ class DataProtoGenerator:
       self.popScope()
 
     # Exit a parse tree produced by DataGeneratorParser#assignField.                                
-    def exitAssignField(self, ctx:DataGeneratorParser.AssignFieldContext):                          
-      self.setFieldValue(self.evalExpr(ctx.expr()))
-      self._proto_paths.clear()
-      pass                                                                                        
+    def enterAssignField(self, ctx:DataGeneratorParser.AssignFieldContext):
+      fields = []
+      self.getProtoPathFields(self._scopes[-1], ctx.protoPath(), fields)
+      assert len(fields) == 1
+      (parent, field_name) = fields[0]
+      self.setFieldValue(parent, field_name, self.evalExpr(ctx.expr()))
                                                                                                     
-    # Enter a parse tree produced by DataGeneratorParser#protoPath.                                 
-    def enterProtoPath(self, ctx:DataGeneratorParser.ProtoPathContext):                             
-      self._proto_paths.append(ctx.NAME().getText())
-
   def generateDataProto(
       self, config: str, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
     """new_repeats: repeat fields that need to be newly created."""
