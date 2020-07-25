@@ -14,7 +14,8 @@ class DataProtoGenerator:
 
   class Listener(DataGeneratorParserListener):
     def __init__(self, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
-      self._scopes = [data]
+      self._data = data
+      self._scopes = []
       self._var_values = var_values
       # overwrite the last instead of append a new one for repeated fields.
       self._new_repeats = new_repeats
@@ -35,18 +36,34 @@ class DataProtoGenerator:
       return (field_type == descriptor.FieldDescriptor.TYPE_FLOAT or
           field_type == descriptor.FieldDescriptor.TYPE_DOUBLE)
 
-    def getProtoPathFields(self, parent, ctx:DataGeneratorParser.ProtoPathContext, results:list):
-      if ctx.protoPath() == None:
-        results.append((parent, ctx.NAME().getText()))
+    def _getProtoPathFields(self, parent, field_names:list, is_all:bool, results:list):
+      """A Recursive function to return all fields with the field name list.
+
+         is_all: if set true, returns all contents in repeated fields. Will not create any
+                 new field if repeated field is empty.
+                 if set false, create a new message for repeated fields if they are empty or the
+                 field name is in 'self._new_repeats'. Returns the last one in the repeated fields. 
+      """
+      if not field_names:
+        results.append(parent)
         return
-      field_name = ctx.NAME().getText()
+      field_name = field_names[0]
       field = getattr(parent, field_name)
       field_descriptor = parent.DESCRIPTOR.fields_by_name[field_name]
       if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
-        for f in field:
-          self.getProtoPathFields(f, ctx.protoPath(), results)
+        if is_all:
+          for f in field:
+            self._getProtoPathFields(f, field_names[1:], is_all, results)
+          return
+        if not len(field) or (self._new_repeats and field_name in self._new_repeats):
+          message = message_factory.MessageFactory().GetPrototype(field_descriptor.message_type)()  
+          field.append(message)
+        self._getProtoPathFields(field[-1], field_names[1:], is_all, results)
       else:
-        self.getProtoPathFields(field, ctx.protoPath(), results)
+        self._getProtoPathFields(field, field_names[1:], is_all, results)
+
+    def getProtoPathFields(self, parent, field_names:list, is_all:bool, results:list):
+      self._getProtoPathFields(parent, field_names, is_all, results)
 
     def setFieldValue(self, parent, field_name, value):
       field_descriptor = parent.DESCRIPTOR.fields_by_name[field_name]
@@ -57,18 +74,23 @@ class DataProtoGenerator:
       else:
         setattr(parent, field_name, value)
 
+    def assignFieldValue(
+        self, parent, scopes:list, proto_path:DataGeneratorParser.ProtoPathContext, value):
+      field_names = []
+      field_names.extend(scopes)
+      pp = proto_path
+      while pp.protoPath():
+        field_names.append(pp.NAME().getText())
+        pp = pp.protoPath()
+      results = []
+      self.getProtoPathFields(self._data, field_names, is_all=False, results=results)
+      assert len(results) == 1
+      self.setFieldValue(results[0], pp.NAME().getText(), value)
+
     def pushScope(self, field_name):
       """push the field message as the current scope."""
-      field = getattr(self._scopes[-1], field_name)
-      field_descriptor = self._scopes[-1].DESCRIPTOR.fields_by_name[field_name]
-      if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
-        if not len(field) or (self._new_repeats and field_name in self._new_repeats): 
-          message = message_factory.MessageFactory().GetPrototype(field_descriptor.message_type)()
-          getattr(self._scopes[-1], field_name).append(message)
-        self._scopes.append(field[-1])
-        return
-      self._scopes.append(field)
-          
+      self._scopes.append(field_name)
+
     def popScope(self):
       self._scopes.pop()
 
@@ -93,13 +115,15 @@ class DataProtoGenerator:
 
     def evalRefVar(self, refVar):
       result = self._var_values[refVar.protoPath().NAME().getText()]
-      if refVar.protoPath().protoPath() == None:
+      proto_path = refVar.protoPath().protoPath()
+      if proto_path == None:
         return result
       fields = [];
-      self.getProtoPathFields(result, refVar.protoPath().protoPath(), fields)
+      while proto_path:
+        fields.append(proto_path.NAME().getText())
+        proto_path = proto_path.protoPath()
       results = [];
-      for parent, field_name in fields:
-        results.append(getattr(parent, field_name))
+      self.getProtoPathFields(result, fields, is_all=True, results=results)
       if len(results) == 1:
         return results[0]
       return results
@@ -118,11 +142,13 @@ class DataProtoGenerator:
 
     # Exit a parse tree produced by DataGeneratorParser#assignField.                                
     def enterAssignField(self, ctx:DataGeneratorParser.AssignFieldContext):
-      fields = []
-      self.getProtoPathFields(self._scopes[-1], ctx.protoPath(), fields)
-      assert len(fields) == 1
-      (parent, field_name) = fields[0]
-      self.setFieldValue(parent, field_name, self.evalExpr(ctx.expr()))
+      value = self.evalExpr(ctx.expr())
+      if isinstance(value, list):
+        for v in value:
+          self.assignFieldValue(self._data, self._scopes, ctx.protoPath(), v)
+      else:
+        self.assignFieldValue(self._data, self._scopes, ctx.protoPath(), value)
+
                                                                                                     
   def generateDataProto(
       self, config: str, data: data_pb2.Data, new_repeats: dict=None, var_values: dict={}):
