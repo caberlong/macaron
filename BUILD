@@ -3,5 +3,6 @@ package_group(
 	packages = [
 		"//data/...",
 		"//proto/...",
+		"//model/...",
 	],
 )

@@ -154,7 +154,7 @@ class YahooQuoteParser:
       if config:
         self._generator.generateDataProto(
             config=config,
-            data=self._data,
+            output_proto=self._data,
             new_repeats=new_repeats,
             var_values={'STRING':value})
 
@@ -164,7 +164,7 @@ class YahooQuoteParser:
       if config:
         self._generator.generateDataProto(
             config=config,
-            data=self._data,
+            output_proto=self._data,
             new_repeats=new_repeats,
             var_values={'NUMBER':value})
 
