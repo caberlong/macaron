@@ -60,7 +60,7 @@ class DataProtoGenerator:
         else:
           # skip the 'value' level
           self._getProtoPathFields(field[self._map_key], field_names[2:], is_all, results)
-          self._map_key = None
+          # self._map_key = None
       else:
         raise
 
@@ -110,7 +110,7 @@ class DataProtoGenerator:
         elif field_name == 'value': 
           assert self._map_key
           parent[self._map_key] = value
-          self._map_key = None
+          # self._map_key = None
         return
 
       field_descriptor = parent.DESCRIPTOR.fields_by_name[field_name]

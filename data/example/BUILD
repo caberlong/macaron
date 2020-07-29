@@ -17,8 +17,19 @@ py_library(
 py_binary(                                                                                          
     name = "example_generator_test",                                                               
     srcs = ["example_generator_test.py"],                                                          
+    args = [                                                                                        
+      "/Users/longchb/Documents/GitHub/macaron/data/store/yahoo_quote/proto/2020-07-16/AMD.proto"
+    ],     
     deps = [                                                                                        
       ":example_generator",                                                        
 	    "//data/utils:data_proto_generator",
     ],                                                                                              
 )
+
+py_binary(                                                                                          
+    name = "example_generator_run",                                                                
+    srcs = ["example_generator_run.py"],                                                           
+    deps = [                                                                                        
+        ":example_generator",                                                                      
+    ],                                                                                              
+)       
