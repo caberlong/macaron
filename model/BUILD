@@ -18,3 +18,33 @@ py_binary(
       ":model_input",                                                        
     ],                                                                                              
 )
+
+py_library(                                                                                         
+    name = "vocabulary",
+    srcs = ["vocabulary.py"],
+		deps = [
+      ":model_input"
+		]
+)                                                                                                   
+
+py_binary(                                                                                          
+    name = "vocabulary_test",                                                               
+    srcs = ["vocabulary_test.py"],                                                          
+    deps = [                                                                                        
+      ":vocabulary",                                                        
+    ],                                                                                              
+)
+
+py_library(                                                                                         
+    name = "baseline_model",
+    srcs = ["baseline_model.py"],
+)                                                                                                   
+
+py_binary(                                                                                          
+    name = "baseline_model_test",                                                               
+    srcs = ["baseline_model_test.py"],                                                          
+    deps = [                                                                                        
+      ":model_input",                                                        
+      ":baseline_model",                                                        
+    ],                                                                                              
+)

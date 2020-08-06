@@ -1,11 +1,15 @@
 import sys
 import os
 import tensorflow as tf
+from tensorflow import feature_column                                                               
+from tensorflow.keras import layers
+from tensorflow.data import Dataset
+
 
 _feature_description = {
     'sector'            : tf.io.FixedLenFeature((), tf.string, default_value=''),
     'industry'          : tf.io.FixedLenFeature((), tf.string, default_value=''),
-    'price'             : tf.io.FixedLenFeature((), tf.float32, default_value=0),
+    'price'             : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
     'total_revenue_b'   : tf.io.FixedLenFeature((), tf.float32, default_value=0),
     'gross_profit_b'    : tf.io.FixedLenFeature((), tf.float32, default_value=0),
     'market_cap_b'      : tf.io.FixedLenFeature((), tf.float32, default_value=0),
@@ -15,6 +19,34 @@ _feature_description = {
     'historical_close'  : tf.io.FixedLenSequenceFeature((), tf.float32, allow_missing=True),
     'historical_volume' : tf.io.FixedLenSequenceFeature((), tf.int64, allow_missing=True),
 }
+
+_sector_vocabs = ['Technology', 'Healthcare', 'Financial Services']                                 
+                                                                                                    
+_industry_vocabs = [                                                                                
+  'Consumer Electronics',                                                                           
+  'Drug Manufacturers\xe2\x80\x94General',                                                          
+  'Medical Devices',                                                                                
+  'Information Technology Services',                                                                
+  'Software\xe2\x80\x94Infrastructure',                                                             
+  'Semiconductors',                                                                                 
+  'Software\xe2\x80\x94Application',                                                                
+  'Medical Instruments & Supplies',                                                                 
+  'Semiconductor Equipment & Materials',                                                            
+  'Healthcare Plans',                                                                               
+  'Electronic Components',                                                                          
+  'Banks\xe2\x80\x94Diversified',                                                                   
+  'Communication Equipment',                                                                        
+  'Computer Hardware',                                                                              
+  'Diagnostics & Research',                                                                         
+  'Medical Care Facilities',                                                                        
+  'Insurance\xe2\x80\x94Life',                                                                      
+  'Credit Services',
+  'Biotechnology',                                                                                  
+  'Financial Data & Stock Exchanges',                                                               
+  'Health Information Services',                                                                    
+  'Pharmaceutical Retailers',                                                                       
+  'Drug Manufacturers\xe2\x80\x94Specialty & Generic',                                              
+]
 
 def _readTFRecord(serialized_example):
   return tf.io.parse_single_example(serialized_example, _feature_description)
@@ -41,16 +73,34 @@ def _resizeHistoricals(tensors):
     'historical_volume': tf.slice(_filterZeros(tensors['historical_volume']), [0], [200]),
   })
 
+def _featureTensors(tensors):
+  return ({
+    'sector': tensors['sector'],
+    'industry': tensors['industry'],
+    'total_revenue_b': tensors['total_revenue_b'],
+    'gross_profit_b': tensors['gross_profit_b'],
+    'market_cap_b': tensors['market_cap_b'],
+    'num_employees': tensors['num_employees'],
+    'historical_high': tensors['historical_high'],
+    'historical_low': tensors['historical_low'],
+    'historical_close': tensors['historical_close'],
+    'historical_volume': tensors['historical_volume'],
+  })
+
+def _labelTensor(tensors):
+  return tensors['price']
+
 class ModelInput:
   def __init__(self, root_dir:str):
-    self._root_dir = root_dir
+    self._dataset = self._parseDataset(root_dir)
+    # self._featureLayer = self._buildFeatureLayer()
 
-  def getAllPaths(self):
+  def _getAllPaths(self, root_dir):
     paths = []
-    for date in os.scandir(self._root_dir):
+    for date in os.scandir(root_dir):
       if not date.is_dir:
         continue
-      date_dir = '/'.join([self._root_dir, date.name])
+      date_dir = '/'.join([root_dir, date.name])
       for f in os.scandir(date_dir):
         segs = f.name.split('.')
         if len(segs) < 2 or not segs[1] == 'tfrecords':
@@ -58,9 +108,34 @@ class ModelInput:
         paths.append(f.path)
     return paths
 
-  def parseDataset(self):
-    dataset = tf.data.TFRecordDataset(self.getAllPaths())
+  def _getFeatures(self, dataset):
+    return dataset.map(_featureTensors)
+
+  def _getLabel(self, dataset):
+    return dataset.map(_labelTensor)
+
+  def _parseDataset(self, root_dir:str):
+    dataset = tf.data.TFRecordDataset(self._getAllPaths(root_dir))
     dataset = dataset.map(_readTFRecord)
     dataset = dataset.filter(_filterByTensorSize)
     dataset = dataset.map(_resizeHistoricals)
-    return dataset
+    return tf.data.Dataset.zip((self._getFeatures(dataset), self._getLabel(dataset)))
+
+  def _buildFeatureLayer(self):
+    feature_columns = []
+    sector = feature_column.categorical_column_with_vocabulary_list(                               
+      'sector', _sector_vocabs)
+    feature_columns.append(sector)
+
+    industry = feature_column.categorical_column_with_vocabulary_list(                               
+      'industry', _industry_vocabs)
+    feature_columns.append(industry)
+    return tf.keras.layers.DenseFeatures(feature_columns)
+
+  @property
+  def dataset(self):
+    return self._dataset
+
+  #@property
+  #def featureLayer(self):
+    #return self._featureLayer
