@@ -48,3 +48,17 @@ py_binary(
       ":baseline_model",                                                        
     ],                                                                                              
 )
+
+py_library(                                                                                         
+    name = "linear_model",
+    srcs = ["linear_model.py"],
+)                                                                                                   
+
+py_binary(                                                                                          
+    name = "linear_model_test",                                                               
+    srcs = ["linear_model_test.py"],                                                          
+    deps = [                                                                                        
+      ":model_input",                                                        
+      ":linear_model",                                                        
+    ],                                                                                              
+)
