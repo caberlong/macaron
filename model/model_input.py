@@ -5,7 +5,7 @@ from tensorflow import feature_column
 from tensorflow.keras import layers
 from tensorflow.data import Dataset
 
-_num_days = 10
+_num_days = 100
 
 _feature_description = {
     'sector'            : tf.io.FixedLenFeature((1,), tf.string, default_value=''),
@@ -59,20 +59,40 @@ def _filterZeros(tensor):
   mask = tf.cast(tensor, dtype=tf.bool)
   return tf.boolean_mask(tensor, mask)
 
+def _toSparse(tensor):
+  return tf.sparse.from_dense(tensor)
+
 def _resizeHistoricals(tensors):
   return ({
-    'sector': tf.repeat(tensors['sector'], _num_days),
-    'industry': tf.repeat(tensors['industry'], _num_days),
-    'price': tf.repeat(tensors['price'], _num_days),
-    'total_revenue_b': tf.repeat(tensors['total_revenue_b'], _num_days),
-    'gross_profit_b': tf.repeat(tensors['gross_profit_b'], _num_days),
-    'market_cap_b': tf.repeat(tensors['market_cap_b'], _num_days),
-    'num_employees': tf.repeat(tensors['num_employees'], _num_days),
-    'historical_high': tf.slice(_filterZeros(tensors['historical_high']), [0], [_num_days]),
-    'historical_low': tf.slice(_filterZeros(tensors['historical_low']), [0], [_num_days]),
-    'historical_close': tf.slice(_filterZeros(tensors['historical_close']), [0], [_num_days]),
-    'historical_volume': tf.slice(_filterZeros(tensors['historical_volume']), [0], [_num_days]),
+    'sector': tensors['sector'],
+    'industry': tensors['industry'],
+    'price': tensors['price'],
+    'total_revenue_b': tensors['total_revenue_b'],
+    'gross_profit_b': tensors['gross_profit_b'],
+    'market_cap_b': tensors['market_cap_b'],
+    'num_employees': tensors['num_employees'],
+    'historical_high': tf.slice(_filterZeros(tensors['historical_high']), [1], [_num_days]),
+    'historical_low': tf.slice(_filterZeros(tensors['historical_low']), [1], [_num_days]),
+    'historical_close': tf.slice(_filterZeros(tensors['historical_close']), [1], [_num_days]),
+    'historical_volume': tf.slice(_filterZeros(tensors['historical_volume']), [1], [_num_days]),
   })
+
+def _concatHistoricals(tensors):
+  return ({
+    'sector': tensors['sector'],
+    'industry': tensors['industry'],
+    'price': tensors['price'],
+    'total_revenue_b': tensors['total_revenue_b'],
+    'gross_profit_b': tensors['gross_profit_b'],
+    'market_cap_b': tensors['market_cap_b'],
+    'num_employees': tensors['num_employees'],
+    'historical_prices': tf.reshape(tf.stack([
+        tensors['historical_high'],
+        tensors['historical_low'],
+        tensors['historical_close'],
+        tf.cast(tensors['historical_volume'], tf.float32)], axis=1), [1, 100, 4]),
+  })
+
 
 def _featureTensors(tensors):
   return ({
@@ -82,10 +102,7 @@ def _featureTensors(tensors):
     'gross_profit_b': tensors['gross_profit_b'],
     'market_cap_b': tensors['market_cap_b'],
     'num_employees': tensors['num_employees'],
-    'historical_high': tensors['historical_high'],
-    'historical_low': tensors['historical_low'],
-    'historical_close': tensors['historical_close'],
-    'historical_volume': tensors['historical_volume'],
+    'historical_prices': tensors['historical_prices'],
   })
 
 def _labelTensor(tensors):
@@ -94,7 +111,8 @@ def _labelTensor(tensors):
 class ModelInput:
   def __init__(self, root_dir:str):
     self._dataset = self._parseDataset(root_dir)
-    self._featureLayer = self._buildFeatureLayer()
+    self._categoricalFeatures, self._categoricalFeatureInputs = self._buildCategoricalFeatures()
+    self._timeSerialsInputs = self._getTimeSerialsInputs()
 
   def _getAllPaths(self, root_dir):
     paths = []
@@ -120,48 +138,68 @@ class ModelInput:
     dataset = dataset.map(_readTFRecord)
     dataset = dataset.filter(_filterByTensorSize)
     dataset = dataset.map(_resizeHistoricals)
+    dataset = dataset.map(_concatHistoricals)
     return tf.data.Dataset.zip((self._getFeatures(dataset), self._getLabel(dataset)))
 
-  def _buildFeatureLayer(self):
+  def _buildCategoricalFeatures(self):
     feature_columns = []
+    inputs = {}
     sector = feature_column.categorical_column_with_vocabulary_list(                               
       'sector', _sector_vocabs)
+    inputs['sector'] = tf.keras.Input(shape=(1,), name='sector', dtype=tf.string)
     feature_columns.append(feature_column.indicator_column(sector))
 
     industry = feature_column.categorical_column_with_vocabulary_list(                               
       'industry', _industry_vocabs)
+    inputs['industry'] = tf.keras.Input(shape=(1,), name='industry', dtype=tf.string)
     feature_columns.append(feature_column.indicator_column(industry))
 
     total_revenue = feature_column.numeric_column('total_revenue_b')
+    inputs['total_revenue_b'] = tf.keras.Input(shape=(1,), name='total_revenue_b', dtype=tf.float32)
     feature_columns.append(total_revenue)
 
     gross_profit = feature_column.numeric_column('gross_profit_b')
+    inputs['gross_profit_b'] = tf.keras.Input(shape=(1,), name='gross_profit_b', dtype=tf.float32)
     feature_columns.append(gross_profit)
 
     market_cap = feature_column.numeric_column('market_cap_b')
+    inputs['market_cap_b'] = tf.keras.Input(shape=(1,), name='market_cap_b', dtype=tf.float32)
     feature_columns.append(market_cap)
 
     num_employees = feature_column.numeric_column('num_employees')
+    inputs['num_employees'] = tf.keras.Input(shape=(1,), name='num_employees', dtype=tf.int32)
     feature_columns.append(num_employees)
 
-    #historical_high = feature_column.numeric_column('historical_high')
+    return tf.keras.layers.DenseFeatures(feature_columns), inputs
+
+  def _getTimeSerialsInputs(self):
+    #historical_high = feature_column.sequence_numeric_column('historical_high', shape=(_num_days,))
+    #inputs['historical_high'] = tf.keras.Input(
+    #    shape=(_num_days,), name='historical_high', sparse=True, dtype=tf.float32)
     #feature_columns.append(historical_high)
 
     #historical_low = feature_column.numeric_column('historical_low')
     #feature_columns.append(historical_low)
 
-    historical_close = feature_column.numeric_column('historical_close')
-    feature_columns.append(historical_close)
+    historical_prices = tf.keras.Input(shape=(None, 4), name='historical_prices', dtype=tf.float32)
 
     #historical_volume = feature_column.numeric_column('historical_volume')
     #feature_columns.append(historical_volume)
 
-    return tf.keras.layers.DenseFeatures(feature_columns)
+    return historical_prices
 
   @property
   def dataset(self):
     return self._dataset
 
   @property
-  def featureLayer(self):
-    return self._featureLayer
+  def categoricalFeatures(self):
+    return self._categoricalFeatures
+
+  @property
+  def categoricalFeatureInputs(self):
+    return self._categoricalFeatureInputs
+
+  @property
+  def timeSerialsInputs(self):
+    return self._timeSerialsInputs
