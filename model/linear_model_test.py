@@ -14,7 +14,7 @@ def main(argv):
   for features, label in model_input.dataset.take(1):
     print('one data: %s' % features['historical_prices'])
     print('one data label: %s' % label)
-  linear_model.fit(model_input.dataset, batch_size=32, epochs=50)
+  linear_model.fit(model_input.dataset, batch_size=16, epochs=10)
   for features, label in model_input.dataset.take(10):
     print('label vs predict: %f <=> %s' % (label.numpy(), linear_model(features).numpy()))
                                                                                                     

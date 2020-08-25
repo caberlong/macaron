@@ -5,7 +5,7 @@ from tensorflow import feature_column
 from tensorflow.keras import layers
 from tensorflow.data import Dataset
 
-_num_days = 100
+_num_days = 20
 
 _feature_description = {
     'sector'            : tf.io.FixedLenFeature((1,), tf.string, default_value=''),
@@ -90,7 +90,7 @@ def _concatHistoricals(tensors):
         tensors['historical_high'],
         tensors['historical_low'],
         tensors['historical_close'],
-        tf.cast(tensors['historical_volume'], tf.float32)], axis=1), [1, 100, 4]),
+        tf.cast(tensors['historical_volume'], tf.float32)], axis=1), [1, _num_days, 4]),
   })
 
 

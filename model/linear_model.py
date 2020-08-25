@@ -11,7 +11,7 @@ class LinearModel():
 
   def categoricalModel(self):
     self._input_layers.extend(self._model_input.categoricalFeatureInputs.values())
-    return tf.keras.layers.Dense(20)(
+    return tf.keras.layers.Dense(3)(
         self._model_input.categoricalFeatures(self._model_input.categoricalFeatureInputs))
 
   def timeSerialsModel(self):
@@ -19,11 +19,11 @@ class LinearModel():
     print('sequential inputs are: %s' % inputs)
     self._input_layers.append(inputs)
 
-    rnn_cell = tf.keras.layers.LSTMCell(20)
+    rnn_cell = tf.keras.layers.LSTMCell(5)
     rnn_layer = tf.keras.layers.RNN(rnn_cell)(inputs)
 
     #return tf.slice(tf.keras.layers.Dense(10)(rnn_layer), [0, 0], [1, 1])
-    return tf.keras.layers.Dense(20)(rnn_layer)
+    return rnn_layer
 
   def model(self):
     categorical_model = self.categoricalModel()
@@ -34,7 +34,7 @@ class LinearModel():
     merged_model = tf.keras.layers.concatenate([categorical_model, time_serials_model])
     pred = tf.keras.layers.Dense(1)(merged_model)
     model_full = tf.keras.Model(inputs=self._input_layers, outputs=pred)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)                                          
+    optimizer = tf.keras.optimizers.Adam(learning_rate=5e-4)                                          
     model_full.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())                          
 
     return model_full
