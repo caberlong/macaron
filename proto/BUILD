@@ -12,7 +12,9 @@ python_proto_library(
       ":timeline_proto",
       ":data_proto",
       ":data_source_config_proto",
-      "//proto/source:yahoo_quote_parser_config_proto"
+      "//proto/source:yahoo_quote_parser_config_proto",
+      "//proto/source:alpha_advantage_source_config_proto",
+      "//proto/source:alpha_advantage_parser_config_proto"
     ],
 )
 

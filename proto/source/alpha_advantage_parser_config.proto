@@ -1,0 +1,26 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "google/protobuf/timestamp.proto"; 
+
+// Configuration to generate data proto from raw JSON files for Alpha Advantage.
+message AlphaAdvantageParserConfig {
+  // All raw data files under this root dir is under consideration.
+  string raw_data_dir = 1;
+
+  // Output directory to store the result data proto.
+  string output_dir = 2;
+
+  // If set, generate date proto only for the these symbols.
+  repeated string symbols = 3;
+
+  // If set, generate data proto only after this timestamp. 
+  google.protobuf.Timestamp earliest_timestamp = 4;
+
+  // If set, generate data proto only before this timestamp.
+  google.protobuf.Timestamp latest_timestamp = 5;
+
+  // If set, store this amount of historical trading data in each data proto.
+  int32 max_historical_price_count = 6;
+}

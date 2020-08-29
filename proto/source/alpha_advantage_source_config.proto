@@ -1,0 +1,74 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+enum AlphaAdvantageFunction { 
+  FUNCTION_UNKNOWN = 0;
+
+  // Stock time series
+  TIME_SERIES_INTRADAY = 1;
+  TIME_SERIES_DAILY = 2;
+  TIME_SERIES_DAILY_ADJUSTED = 3;
+  TIME_SERIES_WEEKLY = 4;
+  TIME_SERIES_WEEKLY_ADJUSTED = 5;
+  TIME_SERIES_MONTHLY = 6;
+  TIME_SERIES_MONTHLY_ADJUSTED = 7;
+
+  // Fundamental data
+  GLOBAL_QUOTE = 8;
+  OVERVIEW = 9;
+  INCOME_STATEMENT = 10;
+  BALANCE_SHEET = 11;
+  CASH_FLOW = 12;
+
+  // Technical indicators
+  SMA = 13;
+  EMA = 14;
+  WMA = 15;
+  DEMA = 16;
+}
+
+enum AlphaAdvantageDataType { 
+  DATA_TYPE_UNKNOWN = 0;
+  JSON = 1;
+  CSV = 2;
+}
+
+enum AlphaAdvantageOutputSize { 
+  OUTPUT_SIZE_UNKNOWN = 0;
+  COMPACT = 1;
+  FULL = 2;
+}
+
+enum AlphaAdvantageInterval { 
+  INTERVAL_UNKNOWN = 0;
+  MIN1 = 1;
+  MIN5 = 2;
+  MIN15 = 3;
+  MIN30 = 4;
+  MIN60 = 5;
+  DAILY = 6;
+  WEEKLY = 7;
+  MONTHLY = 8;
+}
+
+// Configuration to retrieve data from alpha advantage (https://www.alphavantage.co/documentation).
+message AlphaAdvantageSourceConfig {
+  // API key to access alpha advantage data. Required for each access.
+  string api_key = 1;
+
+  // Which tick to quote. E.g., msft.
+  string symbol = 2;
+
+  // Which function to access.
+  AlphaAdvantageFunction aa_function = 3;
+
+  // Data type.
+  AlphaAdvantageDataType data_type = 4;
+
+  // Only for time serials functions.
+  AlphaAdvantageOutputSize output_size = 5;
+
+  // Number of data points used to calculate each technical indicators.
+  int32 time_period = 6;
+}
