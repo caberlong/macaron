@@ -9,11 +9,12 @@ def getConfig():
   config = config_pb2.AlphaAdvantageParserConfig()
   config.raw_data_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/raw'
   config.output_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/proto'
-  config.earliest_timestamp.FromDatetime(datetime.datetime(2020, 1, 1))
-  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 3, 3))
+  config.earliest_timestamp.FromDatetime(datetime.datetime(2019, 10, 1))
+  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 2, 3))
   config.max_historical_price_count = 10
   config.symbols.extend([
-    'AAPL', 'AMAT', 'UBER', 'MU', 'SQ', 'ADSK', 'NOT-IN-DISK'
+    #'AAPL', 'AMAT', 'UBER', 'MU', 'SQ', 'ADSK', 'NOT-IN-DISK'
+    'AAPL'
   ])
   return config
 

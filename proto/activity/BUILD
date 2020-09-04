@@ -53,7 +53,10 @@ cc_proto_library(
 proto_library(                                                                                      
     name = "trading_activity_proto",                                                                     
     srcs = ["trading_activity.proto"],                                                                   
-    deps = [":activity_timestamp_proto"]
+    deps = [
+      ":activity_timestamp_proto",
+      "@com_google_protobuf//:timestamp_proto"
+    ]
 )                                                                                                   
                                                                                                     
 cc_proto_library(                                                                                   

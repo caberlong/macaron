@@ -18,6 +18,15 @@ py_binary(
     ],
 )
 
+py_library(
+    name = "alpha_advantage_downloader_run_lib",
+    srcs = ["alpha_advantage_downloader_run.py"],
+    deps = [
+        ":alpha_advantage_downloader",
+        "//proto:data_python_proto",
+    ],
+)
+
 par_binary(
     name = "alpha_advantage_downloader_run",
     srcs = ["alpha_advantage_downloader_run.py"],
@@ -43,6 +52,17 @@ py_binary(
     srcs = ["alpha_advantage_parser_test.py"],
     deps = [
         ":alpha_advantage_parser",
+        "//proto:data_python_proto",
+        "@com_google_protobuf//:protobuf_python",
+    ],
+)
+
+py_binary(
+    name = "alpha_advantage_parser_run",
+    srcs = ["alpha_advantage_parser_run.py"],
+    deps = [
+        ":alpha_advantage_parser",
+        ":alpha_advantage_downloader_run_lib",
         "//proto:data_python_proto",
         "@com_google_protobuf//:protobuf_python",
     ],

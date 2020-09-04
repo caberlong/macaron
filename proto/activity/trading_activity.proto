@@ -3,6 +3,7 @@ syntax = "proto3";
 package caber.macaron;
 
 import "proto/activity/activity_timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 // Represents trading activity.
 message TradingActivity {
@@ -48,6 +49,13 @@ message TradingActivity {
   double return_on_assets = 32;
   double return_on_equity = 33;
   string currency = 34;
+  // The last Earning timestamp.
+  google.protobuf.Timestamp last_quarter_earning_timestamp = 36;
+  double net_income = 37;
+
+  // Next earning results.
+  google.protobuf.Timestamp next_quarter_earning_timestamp = 38;
+  double next_quarter_total_revenue = 39;
 
   message HistoricalPrice { 
     int32 date = 1;
@@ -56,6 +64,9 @@ message TradingActivity {
     double low = 4;
     double close = 5;
     int64 volume = 6;
+    google.protobuf.Timestamp timestamp = 7;
+    double dividend = 8;  
+    double split = 9;  
   }
 
   repeated HistoricalPrice historical_prices = 35;
