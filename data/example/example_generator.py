@@ -168,7 +168,7 @@ class ExampleGenerator:
     self.addTradingActivityPrice(data, example)
     self.addTradingActivityTotalRevenue(data, example)
     self.addTradingActivityGrossProfit(data, example)
-    self.addTradingActivityMarketCap(data, example)
+    #self.addTradingActivityMarketCap(data, example)
     self.addTradingActivityNumEmployees(data, example)
     self.addTradingActivityHistoricalPriceHigh(data, example)
     self.addTradingActivityHistoricalPriceLow(data, example)

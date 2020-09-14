@@ -4,11 +4,16 @@ package caber.macaron;
 
 import "proto/activity/activity_timestamp.proto";
 
-// Represents timeline of activities of a financial org.
+// Represents timeline of activities for income statement, cash flow and balance sheet.
 message EarningActivity {
-  // A global unique ID for this finance entity.
-	int32 fin_entity_id = 1;
-
 	// Timestamp when activity happens.
-	ActivityTimestamp activity_timestamp = 2;
+	ActivityTimestamp activity_timestamp = 1;
+
+  // Whether it is earning for yearly or quarterly.
+  bool quarterly = 2;
+
+  // Income statement metrics.
+  double total_revenue = 3;
+  double gross_profit = 4;
+  double net_income = 5;
 }

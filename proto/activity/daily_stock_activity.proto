@@ -1,0 +1,24 @@
+syntax = "proto3";
+  
+package caber.macaron;
+
+import "proto/activity/activity_timestamp.proto";
+
+// Summary of daily trading activities.
+message DailyStockActivity {
+	string symbol = 1;
+
+	// Period of timestamps for the date.
+	ActivityTimestamp date_timestamp = 2;
+
+  double open = 3;
+  double high = 4;
+  double low = 5;
+  double close = 6;
+  double adjusted_close = 7;
+
+  int64 volume = 8;
+
+  double dividend = 10;
+  double split = 11;
+}

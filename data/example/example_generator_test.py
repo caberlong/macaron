@@ -14,5 +14,6 @@ def main(argv):
   example = ExampleGenerator().generateExample(data)
   print('Example output: %s ' % example)
 
+
 if __name__ == '__main__':
 	main(sys.argv)

@@ -3,17 +3,17 @@ syntax = "proto3";
 package caber.macaron;
 
 import "proto/activity/trading_activity.proto";
+import "proto/activity/daily_stock_activity.proto";
 import "proto/activity/earning_activity.proto";
-import "proto/activity/reorg_activity.proto";
 
 // Represents timeline of activities of a financial org.
 message Activity {
 	oneof Type {
 		// Trading activity.
 		TradingActivity trading_activity = 1;
-		// Release of earning activity.
-		EarningActivity Earning_activity = 2;
-		// Reorg activity.
-		ReorgActivity reorg_activity = 3;
+		// Daily stock trading activity.
+    DailyStockActivity daily_stock_activity = 2;
+    // Income statememt activity.
+    EarningActivity earning_activity = 3;
 	}
 }

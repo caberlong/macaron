@@ -67,3 +67,34 @@ py_binary(
         "@com_google_protobuf//:protobuf_python",
     ],
 )
+
+py_library(
+    name = "alpha_advantage_activity_builder",
+    srcs = ["alpha_advantage_activity_builder.py"],
+    deps = [
+				"//data/antlr/json:json_antlr_py",
+        "//proto:data_python_proto",
+        "//data/utils:data_proto_generator",
+        "@antlr4_runtimes//:python",
+    ],
+)
+
+py_library(
+    name = "alpha_advantage_timeline_builder",
+    srcs = ["alpha_advantage_timeline_builder.py"],
+    deps = [
+        ":alpha_advantage_activity_builder",
+        "//proto:data_python_proto",
+        "//data/utils:data_proto_generator",
+    ],
+)
+
+py_binary(
+    name = "alpha_advantage_timeline_builder_test",
+    srcs = ["alpha_advantage_timeline_builder_test.py"],
+    deps = [
+        ":alpha_advantage_timeline_builder",
+        "//proto:data_python_proto",
+        "@com_google_protobuf//:protobuf_python",
+    ],
+)

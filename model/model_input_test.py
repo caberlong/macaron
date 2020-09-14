@@ -9,7 +9,7 @@ mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
 
 def main(argv):                                                                                     
-  root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/yahoo_quote/example'
+  root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/example'
   dataset = ModelInput(root_dir).dataset
   record = 0
   for features, label in dataset.take(10):

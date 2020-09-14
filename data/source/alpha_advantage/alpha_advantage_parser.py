@@ -100,6 +100,22 @@ _set_data_proto_price = """
       }
     }
   } """
+_set_data_proto_shares_outstanding = """
+  timelines {
+    activities {
+      trading_activity {
+        shares_outstanding : $INT;
+      }
+    }
+  } """
+_set_data_proto_num_full_time_employees = """
+  timelines {
+    activities {
+      trading_activity {
+        num_full_time_employees : $INT;
+      }
+    }
+  } """
 _set_data_proto_sector = """
   timelines {
     fin_entity {
@@ -235,24 +251,43 @@ def _isoformatTimestamp(isoformat:str):
   result = int(datetime.datetime(dt.year, dt.month, dt.day).timestamp())                        
   return result 
 
+def _getDataProtoOutputPath(output_dir:str, symbol:str, date_isoformat:str):
+  return '/'.join([output_dir, date_isoformat, '.'.join([symbol, 'proto'])])
+
+def _readDataProto(output_path:str):
+  data = data_pb2.Data()                                                                            
+  if not os.path.isfile(output_path):
+    return None
+  try:
+    f = open(output_path, 'rb')
+    data.ParseFromString(f.read())                                                                    
+    f.close()  
+    return data
+  except e:
+    print('%s' % e)
+
+def _getMaxHistoricalPriceCount(config: config_pb2.AlphaAdvantageParserConfig):              
+  if config.max_historical_price_count and config.max_historical_price_count > 0:                 
+    return config.max_historical_price_count                                                      
+  return _default_max_historical_price_count 
+
 class AlphaAdvantageParser:
   def __init__(self):
     self._generator = data_proto_generator.DataProtoGenerator()
     pass
 
-  def parse(self, config: config_pb2.AlphaAdvantageParserConfig):
-    assert config.raw_data_dir
-    assert config.output_dir
+  def parse(self, parser_config: config_pb2.AlphaAdvantageParserConfig):
+    assert parser_config.raw_data_dir
+    assert parser_config.output_dir
 
-    symbols = self.getSymbolsInRawDataDir(config.raw_data_dir)
-    dates = self.getDatesFromConfig(config)
+    symbols = self.getSymbolsInRawDataDir(parser_config.raw_data_dir)
+    dates = self.getDatesFromConfig(parser_config)
     for symbol in symbols.keys():
-      if config.symbols and not symbol in config.symbols:
+      if parser_config.symbols and not symbol in parser_config.symbols:
         continue
-      protos = self.parseOneSymbol(
-          symbol, symbols[symbol], dates, self.getMaxHistoricalPriceCount(config))
+      protos = self.parseOneSymbol(symbol, symbols[symbol], dates, parser_config)
       for proto in protos:
-        self.outputProto(config.output_dir, proto)
+        self.outputProto(parser_config.output_dir, proto, parser_config.print_only)
 
   def getSymbolsInRawDataDir(self, raw_data_dir:str):
     results = {}
@@ -285,18 +320,35 @@ class AlphaAdvantageParser:
       d = d + datetime.timedelta(1)
     return results
 
-  def parseOneSymbol(self, symbol:str, paths:list, dates:list, max_historical_price_count:int): 
+  def parseOneSymbol(
+      self,
+      symbol:str,
+      paths:list,
+      dates:list,
+      parser_config:config_pb2.AlphaAdvantageParserConfig): 
     protos = []
+    output_dir = parser_config.output_dir
     for date in dates:
-      data_proto = self.createDataProto(symbol, date)
+      output_path = _getDataProtoOutputPath(parser_config.output_dir, symbol, date.isoformat())
+      if os.path.isfile(output_path) and os.path.getsize(output_path) > 128:  
+        if parser_config.skip_existing:
+          continue
+        else:
+          data_proto = _readDataProto(output_path)
+      else:
+        data_proto = self.createDataProto(symbol, date)
       protos.append(data_proto)
+    if not protos:
+      return protos
     for path in paths:
-      self.populateDataProtos(path, protos, max_historical_price_count)
+      self.populateDataProtos(path, protos, parser_config)
     return protos
 
-  def outputProto(self, output_dir:str, proto:data_pb2.Data): 
+  def outputProto(self, output_dir:str, proto:data_pb2.Data, print_only:bool): 
     output_path = self.getDataProtoOutputPath(output_dir, proto)
-    if os.path.isfile(output_path) and os.path.getsize(output_path) > 1000:  
+    if print_only:
+      print('write to %s' % output_path)
+      print('%s' % proto) 
       return
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     try:                                                                                            
@@ -307,11 +359,9 @@ class AlphaAdvantageParser:
       print(e)
 
   def getDataProtoOutputPath(self, output_dir:str, proto:data_pb2.Data):
-    return '/'.join([
-      output_dir,
-      datetime.datetime.fromtimestamp(_getTimeSerialTimestamp(proto)).date().isoformat(),
-      '.'.join([_getSymbol(proto), 'proto'])
-    ])
+    date_isoformat = datetime.datetime.fromtimestamp(
+        _getTimeSerialTimestamp(proto)).date().isoformat()
+    return _getDataProtoOutputPath(output_dir, _getSymbol(proto), date_isoformat)
 
   def createDataProto(self, symbol:str, date:datetime.date):
     data_proto = data_pb2.Data() 
@@ -330,48 +380,57 @@ class AlphaAdvantageParser:
         var_values={'INT':timestamp})
     return data_proto
 
-  def getMaxHistoricalPriceCount(self, config: config_pb2.AlphaAdvantageParserConfig):
-    if config.max_historical_price_count and config.max_historical_price_count > 0:
-      return config.max_historical_price_count 
-    return _default_max_historical_price_count
-
   class Listener(JSONListener):                                                         
-    def __init__(self, data_protos: list, max_historical_price_count:int):                                                        
+    def __init__(self, data_protos: list, parser_config:config_pb2.AlphaAdvantageParserConfig):                                                        
       self._data_protos = data_protos
       self._generator = data_proto_generator.DataProtoGenerator()
-      # for fundamentals
       self._current_earning_timestamp = None
-      # for time serials
       self._current_time_serial_timestamp = None
       self._keys = []
-      self._max_historical_price_count = max_historical_price_count
+      self._parser_config = parser_config
+      self._max_historical_price_count = _getMaxHistoricalPriceCount(parser_config)
                                                                                                     
     def enterPair(self, ctx:JSONParser.PairContext):                                               
       key = ctx.STRING().getText()[1:-1]
       value = ctx.value().getText()[1:-1]
       self._keys.append(key)
+      if value == 'None':
+        return
       if key == 'fiscalDateEnding':
         self._current_earning_timestamp = _isoformatTimestamp(value)
         assert self._current_earning_timestamp > _isoformatTimestamp('1980-01-01')
-      elif re.match(r'^\d{4}-\d{2}-\d{2}$', key):
+        return
+      if re.match(r'^\d{4}-\d{2}-\d{2}$', key):
         self._current_time_serial_timestamp = _isoformatTimestamp(key)
-      elif (key == 'totalRevenue') and self.isQuarterlyReports():
-        assert self._current_earning_timestamp
-        self.setQuarterEarningTimestamps(self._current_earning_timestamp)
-        self.setFundamentals(_set_data_proto_total_revenue, float(value))
-        self.setNextQuarterFundamentals(_set_data_proto_next_quarter_total_revenue, float(value))
-      elif (key == 'netIncome') and self.isQuarterlyReports():
+        return
+      if (key == 'totalRevenue') and self.isQuarterlyReports():
+        self.parseTotalRevenue(value)
+        return
+      if (key == 'netIncome') and self.isQuarterlyReports():
         assert self._current_earning_timestamp
         self.setFundamentals(_set_data_proto_net_income, float(value))
-      elif (key == 'grossProfit') and self.isQuarterlyReports():
+        return
+      if (key == 'grossProfit') and self.isQuarterlyReports():
         assert self._current_earning_timestamp
         self.setFundamentals(_set_data_proto_gross_profit, float(value))
-      elif key == 'Sector':
+        return
+      if key == 'SharesOutstanding':
+        self.setTraits(_set_data_proto_shares_outstanding, int(value))
+        return
+      if key == 'FullTimeEmployees':
+        self.setTraits(_set_data_proto_num_full_time_employees, int(value))
+        return
+      if key == 'Sector':
         self.setTraits(_set_data_proto_sector, value)
-      elif key == 'Industry':
+        return
+      if key == 'Industry':
         self.setTraits(_set_data_proto_industry, value)
-      # time serials
-      elif key == _time_serials_open_key:
+        return
+
+      self.parseTimeSerials(key, value)
+
+    def parseTimeSerials(self, key:str, value:str):
+      if key == _time_serials_open_key:
         assert self._current_time_serial_timestamp
         self.setTimeSerials(
             _set_data_proto_open, float(value), new_repeats={'historical_prices': None})
@@ -396,6 +455,12 @@ class AlphaAdvantageParser:
       elif key == _time_serials_split_key:
         assert self._current_time_serial_timestamp
         self.setTimeSerials(_set_data_proto_split, float(value))
+
+    def parseTotalRevenue(self, value:str):
+      assert self._current_earning_timestamp
+      self.setQuarterEarningTimestamps(self._current_earning_timestamp)
+      self.setFundamentals(_set_data_proto_total_revenue, float(value))
+      self.setNextQuarterFundamentals(_set_data_proto_next_quarter_total_revenue, float(value))
 
     def setQuarterEarningTimestamps(self, timestamp):
       for data_proto in self._data_protos:
@@ -462,12 +527,13 @@ class AlphaAdvantageParser:
     def isQuarterlyReports(self):
       return 'quarterlyReports' in self._keys
 
-  def populateDataProtos(self, path:str, protos:list, max_historical_price_count:int):
+  def populateDataProtos(
+      self, path:str, protos:list, parser_config:config_pb2.AlphaAdvantageParserConfig):
     input = FileStream(path, encoding='utf-8')                                  
     lexer = JSONLexer(input)                                                                  
     token = CommonTokenStream(lexer)                                                                
     parser = JSONParser(token)                                                                     
     tree = parser.json()                                                                     
     walker = ParseTreeWalker()                                                                      
-    walker.walk(self.Listener(protos, max_historical_price_count), tree)                        
+    walker.walk(self.Listener(protos, parser_config), tree)
     

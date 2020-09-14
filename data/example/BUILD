@@ -18,7 +18,7 @@ py_binary(
     name = "example_generator_test",                                                               
     srcs = ["example_generator_test.py"],                                                          
     args = [                                                                                        
-      "/Users/longchb/Documents/GitHub/macaron/data/store/yahoo_quote/proto/2020-07-16/AMD.proto"
+      "/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/proto/2020-07-16/AMD.proto /Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/example"
     ],     
     deps = [                                                                                        
       ":example_generator",                                                        

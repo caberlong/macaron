@@ -138,3 +138,4 @@ bazel-tools
 
 bin
 data/store
+.DS_store

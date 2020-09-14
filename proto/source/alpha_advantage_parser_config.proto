@@ -23,4 +23,20 @@ message AlphaAdvantageParserConfig {
 
   // If set, store this amount of historical trading data in each data proto.
   int32 max_historical_price_count = 6;
+
+  // If true, skip the data proto if a file already exist.
+  bool skip_existing = 7;
+
+  // If true, print out results instead of writting out to output directories.
+  bool print_only = 8;
+
+  enum Interval {
+    INTERVAL_YEAR = 0;
+    INTERVAL_MONTH = 1;
+    INTERVAL_DAY = 2;
+    INTERVAL_HOUE = 3;
+    INTERVAL_MINUTE = 4;
+  }
+
+  Interval interval = 9;
 }

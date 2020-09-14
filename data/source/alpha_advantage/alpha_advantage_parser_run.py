@@ -8,11 +8,15 @@ from data.source.alpha_advantage import alpha_advantage_downloader_run as downlo
 from google.protobuf import timestamp_pb2
 from multiprocessing import Pool 
 
+_root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage'
+_raw_data_dir = '/'.join([_root_dir, 'raw/overview'])
+_output_dir = '/'.join([_root_dir, 'proto'])
+
 
 def getConfig(symbol:str):
   config = config_pb2.AlphaAdvantageParserConfig()
-  config.raw_data_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/raw'
-  config.output_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/proto'
+  config.raw_data_dir = _raw_data_dir
+  config.output_dir = _output_dir
   config.earliest_timestamp.FromDatetime(datetime.datetime(2016, 1, 1))
   config.latest_timestamp.FromDatetime(datetime.datetime(2020, 9, 2))
   config.max_historical_price_count = 28

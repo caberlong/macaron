@@ -5,6 +5,7 @@ package caber.macaron;
 import "proto/activity/activity_timestamp.proto";
 import "google/protobuf/timestamp.proto";
 
+// Deprecated.
 // Represents trading activity.
 message TradingActivity {
   // Trading symbol.

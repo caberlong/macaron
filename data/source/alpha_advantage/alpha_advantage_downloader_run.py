@@ -10,7 +10,7 @@ high_tech_symbols = [
   'ASML', 'ACN', 'AVGO', 'TXN', 'IBM', 'SHOP', 'QCOM', 'SNE', 'FIS', 'NOW',
   'INTU', 'FISV', 'AMD', 'VMW', 'AMAT', 'UBER', 'MU', 'SQ', 'ADSK', 'LRCX',
   'INFY', 'DELL', 'ADI', 'WDAY', 'TEAM', 'DOCU', 'NXPI', 'CTSH', 'ERIC', 'SPLK',
-  'KLAC', 'APH', 'SNPS', 'TEL', 'CDNS', 'MCHP', 'STM', 'DDOG', 'HPQ', 'ANSS',
+  'KLAC', 'APH', 'SNPS', 'TEL', 'CDNS', 'MCHP', 'HPQ', 'ANSS',
 ]
 finance_symbols = [
   'V', 'JPM', 'MA', 'BAC', 'PYPL', 'C', 'LFC', 'WFC', 'RY', 'HSBC', 'MS',
@@ -18,9 +18,11 @@ finance_symbols = [
 ]
 bio_symbols = [
   'JNJ', 'UNH', 'NVS', 'MRK', 'PFE', 'ABBV', 'ABT', 'LLY', 'TMO', 'NVO',
-  'AZN', 'AMGN', 'BMY', 'DHR', 'SNY', 'MDT', 'BDX', 'VRTX', 'ISRG', 'SYK',
-  'ZTS', 'ANTM', 'HUM', 'BSX', 'EW', 'BIIB', 'PHG', 'WBA', 'SGEN', 'MRNA',
-  'ALC', 'IDXX',
+  'AZN', 'AMGN', 'BMY', 'DHR', 'SNY', 'MDT', 'VRTX', 'ISRG', 'SYK',
+  'ZTS', 'ANTM', 'HUM', 'BSX', 'PHG', 'WBA', 'SGEN', 'MRNA',
+]
+etfs = [
+  'DIA', 'GLD', 'GDX', 'SPY', 'QQQ', 'VFH', 'IBB',
 ]
 
 def getConfigs(aa_function: config_pb2.AlphaAdvantageFunction):
@@ -29,6 +31,7 @@ def getConfigs(aa_function: config_pb2.AlphaAdvantageFunction):
   symbols.extend(high_tech_symbols)
   symbols.extend(finance_symbols)
   symbols.extend(bio_symbols)
+  symbols.extend(etfs)
   for symbol in symbols:
     config = config_pb2.AlphaAdvantageSourceConfig()
     config.symbol = symbol

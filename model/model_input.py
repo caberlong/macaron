@@ -5,7 +5,7 @@ from tensorflow import feature_column
 from tensorflow.keras import layers
 from tensorflow.data import Dataset
 
-_num_days = 20
+_num_days = 10
 
 _feature_description = {
     'sector'            : tf.io.FixedLenFeature((1,), tf.string, default_value=''),
@@ -13,7 +13,7 @@ _feature_description = {
     'price'             : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
     'total_revenue_b'   : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
     'gross_profit_b'    : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
-    'market_cap_b'      : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
+    #'market_cap_b'      : tf.io.FixedLenFeature((1,), tf.float32, default_value=0),
     'num_employees'     : tf.io.FixedLenFeature((1,), tf.int64, default_value=0),
     'historical_high'   : tf.io.FixedLenSequenceFeature((), tf.float32, allow_missing=True),
     'historical_low'    : tf.io.FixedLenSequenceFeature((), tf.float32, allow_missing=True),
@@ -24,29 +24,29 @@ _feature_description = {
 _sector_vocabs = ['Technology', 'Healthcare', 'Financial Services']                                 
                                                                                                     
 _industry_vocabs = [                                                                                
-  'Consumer Electronics',                                                                           
-  'Drug Manufacturers\xe2\x80\x94General',                                                          
-  'Medical Devices',                                                                                
-  'Information Technology Services',                                                                
-  'Software\xe2\x80\x94Infrastructure',                                                             
-  'Semiconductors',                                                                                 
-  'Software\xe2\x80\x94Application',                                                                
-  'Medical Instruments & Supplies',                                                                 
-  'Semiconductor Equipment & Materials',                                                            
-  'Healthcare Plans',                                                                               
-  'Electronic Components',                                                                          
-  'Banks\xe2\x80\x94Diversified',                                                                   
-  'Communication Equipment',                                                                        
-  'Computer Hardware',                                                                              
-  'Diagnostics & Research',                                                                         
-  'Medical Care Facilities',                                                                        
-  'Insurance\xe2\x80\x94Life',                                                                      
+  'Asset Management',
+  'BanksDiversified',
+  'Biotechnology',
+  'Capital Markets',
+  'Communication Equipment',
+  'Computer Hardware',
+  'Consumer Electronics',
   'Credit Services',
-  'Biotechnology',                                                                                  
-  'Financial Data & Stock Exchanges',                                                               
-  'Health Information Services',                                                                    
-  'Pharmaceutical Retailers',                                                                       
-  'Drug Manufacturers\xe2\x80\x94Specialty & Generic',                                              
+  'Diagnostics & Research',
+  'Drug ManufacturersGeneral',
+  'Drug ManufacturersSpecialty & Generic',
+  'Electronic Components',
+  'Financial Data & Stock Exchanges',
+  'Healthcare Plans',
+  'Information Technology Services',
+  'InsuranceLife',
+  'Medical Devices',
+  'Medical Instruments & Supplies',
+  'Pharmaceutical Retailers',
+  'Semiconductor Equipment & Materials',
+  'Semiconductors',
+  'SoftwareApplication',
+  'SoftwareInfrastructure',
 ]
 
 def _readTFRecord(serialized_example):
@@ -69,7 +69,7 @@ def _resizeHistoricals(tensors):
     'price': tensors['price'],
     'total_revenue_b': tensors['total_revenue_b'],
     'gross_profit_b': tensors['gross_profit_b'],
-    'market_cap_b': tensors['market_cap_b'],
+    #'market_cap_b': tensors['market_cap_b'],
     'num_employees': tensors['num_employees'],
     'historical_high': tf.slice(_filterZeros(tensors['historical_high']), [1], [_num_days]),
     'historical_low': tf.slice(_filterZeros(tensors['historical_low']), [1], [_num_days]),
@@ -84,7 +84,7 @@ def _concatHistoricals(tensors):
     'price': tensors['price'],
     'total_revenue_b': tensors['total_revenue_b'],
     'gross_profit_b': tensors['gross_profit_b'],
-    'market_cap_b': tensors['market_cap_b'],
+    #'market_cap_b': tensors['market_cap_b'],
     'num_employees': tensors['num_employees'],
     'historical_prices': tf.reshape(tf.stack([
         tensors['historical_high'],
@@ -100,7 +100,7 @@ def _featureTensors(tensors):
     'industry': tensors['industry'],
     'total_revenue_b': tensors['total_revenue_b'],
     'gross_profit_b': tensors['gross_profit_b'],
-    'market_cap_b': tensors['market_cap_b'],
+    #'market_cap_b': tensors['market_cap_b'],
     'num_employees': tensors['num_employees'],
     'historical_prices': tensors['historical_prices'],
   })
@@ -135,6 +135,7 @@ class ModelInput:
 
   def _parseDataset(self, root_dir:str):
     dataset = tf.data.TFRecordDataset(self._getAllPaths(root_dir))
+    # print('dataset: %s len(%d)' % (dataset, len(dataset)))
     dataset = dataset.map(_readTFRecord)
     dataset = dataset.filter(_filterByTensorSize)
     dataset = dataset.map(_resizeHistoricals)
@@ -162,9 +163,9 @@ class ModelInput:
     inputs['gross_profit_b'] = tf.keras.Input(shape=(1,), name='gross_profit_b', dtype=tf.float32)
     feature_columns.append(gross_profit)
 
-    market_cap = feature_column.numeric_column('market_cap_b')
-    inputs['market_cap_b'] = tf.keras.Input(shape=(1,), name='market_cap_b', dtype=tf.float32)
-    feature_columns.append(market_cap)
+    #market_cap = feature_column.numeric_column('market_cap_b')
+    #inputs['market_cap_b'] = tf.keras.Input(shape=(1,), name='market_cap_b', dtype=tf.float32)
+    #feature_columns.append(market_cap)
 
     num_employees = feature_column.numeric_column('num_employees')
     inputs['num_employees'] = tf.keras.Input(shape=(1,), name='num_employees', dtype=tf.int32)
