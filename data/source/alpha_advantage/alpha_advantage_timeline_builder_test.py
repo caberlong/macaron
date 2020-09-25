@@ -11,10 +11,12 @@ _output_dir = '/'.join([_root_dir, 'proto'])
 
 def getConfig():
   config = config_pb2.AlphaAdvantageParserConfig()
-  config.raw_data_dir = _raw_data_dir
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'balance_sheet']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'income_statement']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'cash_flow']))
   config.output_dir = _output_dir
-  config.earliest_timestamp.FromDatetime(datetime.datetime(2020, 1, 1))
-  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 4, 1))
+  config.earliest_timestamp.FromDatetime(datetime.datetime(2019, 1, 1))
+  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 10, 1))
   config.symbols.extend([
     #'AAPL', 'AMAT', 'UBER', 'MU', 'SQ', 'ADSK', 'NOT-IN-DISK'
     'SQ'

@@ -10,7 +10,7 @@ message EarningActivity {
 	ActivityTimestamp activity_timestamp = 1;
 
   // Whether it is earning for yearly or quarterly.
-  bool quarterly = 2;
+  string type = 2;
 
   // Income statement metrics.
   double total_revenue = 3;

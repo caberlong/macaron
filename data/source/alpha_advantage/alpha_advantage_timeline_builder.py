@@ -83,10 +83,10 @@ class AlphaAdvantageTimelineBuilder:
     pass
 
   def parse(self, parser_config:config_pb2.AlphaAdvantageParserConfig):
-    assert parser_config.raw_data_dir
+    assert parser_config.raw_data_dirs
     assert parser_config.output_dir
 
-    symbols = self.getSymbolsInRawDataDir(parser_config.raw_data_dir)
+    symbols = self.getSymbolsInRawDataDir(parser_config.raw_data_dirs)
     timestamps = self.getActivityTimestamps(parser_config)
     for symbol in symbols.keys():
       if parser_config.symbols and not symbol in parser_config.symbols:
@@ -95,15 +95,16 @@ class AlphaAdvantageTimelineBuilder:
       for proto in protos:
         self.outputProto(parser_config, symbol, proto, parser_config.print_only)
 
-  def getSymbolsInRawDataDir(self, raw_data_dir:str):
+  def getSymbolsInRawDataDir(self, raw_data_dirs:list):
     results = {}
-    for root, dirs, files in os.walk(raw_data_dir): 
-      for f in files:
-        if not f.endswith('.json'):
-           continue
-        symbol = os.path.splitext(f)[0]
-        results.setdefault(symbol, [])
-        results[symbol].append('/'.join([root, f]))
+    for raw_data_dir in raw_data_dirs:
+      for root, dirs, files in os.walk(raw_data_dir): 
+        for f in files:
+          if not f.endswith('.json'):
+             continue
+          symbol = os.path.splitext(f)[0]
+          results.setdefault(symbol, [])
+          results[symbol].append('/'.join([root, f]))
     return results
 
   def getActivityTimestamps(self, config: config_pb2.AlphaAdvantageParserConfig):
@@ -170,10 +171,6 @@ class AlphaAdvantageTimelineBuilder:
 
   def createDataProto(self, symbol:str, start_timestamp:int, end_timestamp:int):
     data_proto = data_pb2.Data() 
-    self._generator.generateDataProto(                                                          
-        config=_set_data_proto_symbol,
-        output_proto=data_proto,
-        var_values={'STRING':symbol})
     self._generator.generateDataProto(                                                          
         config=_set_data_proto_common_trait_symbol,
         output_proto=data_proto,

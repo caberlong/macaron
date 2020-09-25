@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 // Configuration to generate data proto from raw JSON files for Alpha Advantage.
 message AlphaAdvantageParserConfig {
   // All raw data files under this root dir is under consideration.
-  string raw_data_dir = 1;
+  repeated string raw_data_dirs = 1;
 
   // Output directory to store the result data proto.
   string output_dir = 2;

@@ -11,7 +11,32 @@ from google.protobuf.internal.containers import MessageMap
 
 class DataProtoGenerator:
   def __init__(self):
+    _tree = None
     pass
+
+  def generateDataProto(
+      self, config: str, output_proto, new_repeats: dict=None, var_values: dict={}):
+    """new_repeats: repeat fields that need to be newly created."""
+    lexer = DataGeneratorLexer(InputStream(config))
+    stream = CommonTokenStream(lexer)
+    parser = DataGeneratorParser(stream)
+    tree = parser.generateDataProto()
+    walker = ParseTreeWalker();
+    listener = self.Listener(
+        output_proto=output_proto, new_repeats=new_repeats, var_values=var_values);
+    walker.walk(listener, tree);
+
+  def configurate(self, config: str):
+    lexer = DataGeneratorLexer(InputStream(config))
+    stream = CommonTokenStream(lexer)
+    parser = DataGeneratorParser(stream)
+    self._tree = parser.generateDataProto()
+
+  def generateDataProto(self, output_proto, new_repeats: dict=None, var_values: dict={}):
+    walker = ParseTreeWalker();
+    listener = self.Listener(
+        output_proto=output_proto, new_repeats=new_repeats, var_values=var_values);
+    walker.walk(listener, self._tree);
 
   class Listener(DataGeneratorParserListener):
     def __init__(self, output_proto, new_repeats: dict=None, var_values: dict={}):
@@ -203,14 +228,4 @@ class DataProtoGenerator:
         self.assignFieldValue(self._output_proto, self._scopes, ctx.protoPath(), value)
 
                                                                                                     
-  def generateDataProto(
-      self, config: str, output_proto, new_repeats: dict=None, var_values: dict={}):
-    """new_repeats: repeat fields that need to be newly created."""
-    lexer = DataGeneratorLexer(InputStream(config))
-    stream = CommonTokenStream(lexer)
-    parser = DataGeneratorParser(stream)
-    tree = parser.generateDataProto()
-    walker = ParseTreeWalker();
-    listener = self.Listener(
-        output_proto=output_proto, new_repeats=new_repeats, var_values=var_values);
-    walker.walk(listener, tree);
+

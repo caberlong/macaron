@@ -38,7 +38,7 @@ _set_data_proto_earning_quarterly = """
   timelines {
     activities {
       earning_activity {
-        quarterly : $BOOL;
+        type : $STRING;
       }
     }
   } """
@@ -236,9 +236,9 @@ class AlphaAdvantageActivityBuilder:
                              self._current_earning_timestamp,
                              new_repeats={'activities': None})
         if self.isQuarterlyReports():
-          self.setFundamentals(_set_data_proto_earning_quarterly, True)
+          self.setFundamentals(_set_data_proto_earning_quarterly, "quarter")
         else:
-          self.setFundamentals(_set_data_proto_earning_quarterly, False)
+          self.setFundamentals(_set_data_proto_earning_quarterly, "annual")
         return
 
       if key == 'totalRevenue':
@@ -297,17 +297,17 @@ class AlphaAdvantageActivityBuilder:
 
     def setFundamentals(self, config:str, value, new_repeats:dict = None):
       for data_proto in self._data_protos:
-        if self._current_earning_timestamp == _getLastQuarterEarningTimestamp(data_proto):
+        if _timestampContained(data_proto, self._current_earning_timestamp):
           self.setFundamental(data_proto, config, value, new_repeats)
 
     def setFundamental(self, data_proto, config:str, value, new_repeats:dict = None):
       value_key = 'STRING'
-      if isinstance(value, int):
-        value_key = 'INT'
-      elif isinstance(value, float):
-        value_key = 'FLOAT'
-      elif isinstance(value, bool):
+      if type(value) == bool:
         value_key = 'BOOL'
+      elif type(value) == int:
+        value_key = 'INT'
+      elif type(value) == float:
+        value_key = 'FLOAT'
       self._generator.generateDataProto(config=config,
                                         output_proto=data_proto,
                                         new_repeats=new_repeats,

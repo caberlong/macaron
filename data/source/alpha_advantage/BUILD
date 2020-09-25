@@ -1,6 +1,10 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 load("@subpar//:subpar.bzl", "par_binary")
 
+package (
+    default_visibility = ["//:data_consumer"]
+)
+
 py_library(
     name = "alpha_advantage_downloader",
     srcs = ["alpha_advantage_downloader.py"],
@@ -97,4 +101,15 @@ py_binary(
         "//proto:data_python_proto",
         "@com_google_protobuf//:protobuf_python",
     ],
+)
+
+py_binary(                                                                                          
+    name = "alpha_advantage_timeline_builder_run",                                                            
+    srcs = ["alpha_advantage_timeline_builder_run.py"],                                                       
+    deps = [                                                                                        
+        ":alpha_advantage_timeline_builder",                                                                  
+        ":alpha_advantage_downloader_run_lib",                                                      
+        "//proto:data_python_proto",                                                                
+        "@com_google_protobuf//:protobuf_python",                                                   
+    ],                                                                                              
 )
