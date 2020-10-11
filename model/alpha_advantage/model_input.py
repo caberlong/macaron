@@ -30,6 +30,8 @@ def _labelTensor(tensors):
 class ModelInput:
   def __init__(self, root_dir:str):
     self._dataset = self._parseDataset(root_dir)
+    self._dataset.shuffle(1000)
+    self._train_size = (int)(self._dataset.reduce(0, lambda x, _: x + 1).numpy() * 0.8)
     self._timeSeriesInputs = self._getTimeSeriesInputs()
 
   def _getAllPaths(self, root_dir):
@@ -57,6 +59,14 @@ class ModelInput:
   @property
   def dataset(self):
     return self._dataset
+
+  @property
+  def dataset_train(self):
+    return self._dataset.take(self._train_size)
+
+  @property
+  def dataset_test(self):
+    return self._dataset.skip(self._train_size)
 
   @property
   def timeSeriesInputs(self):

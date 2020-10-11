@@ -168,7 +168,7 @@ class NormalizedExampleGenerator:
     norm_volumes = []
     fed_rates = []
     index = index + 1
-    while len(norm_prices) < self._length:
+    while len(norm_prices) <= self._length:
       if index >= len(activities) - 1:
         return None
       activity = activities[index]
@@ -198,21 +198,21 @@ class NormalizedExampleGenerator:
     fed_rates.reverse()
 
     scale = norm_prices[0]
-    norm_prices = map(lambda price: price/scale, norm_prices)
-    norm_highs = map(lambda price: price/scale, norm_highs)
-    norm_lows = map(lambda price: price/scale, norm_lows)
+    norm_prices = [price/scale for price in norm_prices]
+    norm_highs = [price/scale for price in norm_highs]
+    norm_lows = [price/scale for price in norm_lows]
 
     volume_scale = norm_volumes[0]
-    norm_volumes = map(lambda volume: volume/volume_scale, norm_volumes)
+    norm_volumes = [volume/volume_scale for volume in norm_volumes]
 
-    label_price = 1.0/scale
+    label_price = 1.0 / scale
 
     example = tf.train.Example()
-    _normalizedPricesToExample(norm_prices, 'historical_prices', self._generator, example)
-    _normalizedPricesToExample(norm_highs, 'historical_highs', self._generator, example)
-    _normalizedPricesToExample(norm_lows, 'historical_lows', self._generator, example)
-    _normalizedPricesToExample(norm_volumes, 'historical_volumes', self._generator, example)
-    _normalizedPricesToExample(fed_rates, 'fed_rates', self._generator, example)
+    _normalizedPricesToExample(norm_prices[:-1], 'historical_prices', self._generator, example)
+    _normalizedPricesToExample(norm_highs[:-1], 'historical_highs', self._generator, example)
+    _normalizedPricesToExample(norm_lows[:-1], 'historical_lows', self._generator, example)
+    _normalizedPricesToExample(norm_volumes[:-1], 'historical_volumes', self._generator, example)
+    _normalizedPricesToExample(fed_rates[:-1], 'fed_rates', self._generator, example)
     _labelPriceToExample(label_price, self._generator, example)
     return example
 

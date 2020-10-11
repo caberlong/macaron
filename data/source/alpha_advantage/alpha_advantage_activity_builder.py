@@ -308,8 +308,8 @@ class AlphaAdvantageActivityBuilder:
         value_key = 'INT'
       elif type(value) == float:
         value_key = 'FLOAT'
-      self._generator.generateDataProto(config=config,
-                                        output_proto=data_proto,
+      self._generator.configurate(config)
+      self._generator.generateDataProto(output_proto=data_proto,
                                         new_repeats=new_repeats,
                                         var_values={value_key:value})
 
@@ -323,8 +323,8 @@ class AlphaAdvantageActivityBuilder:
         value_key = 'INT'
       elif isinstance(value, float):
         value_key = 'FLOAT'
+      self._generator.configurate(config)
       self._generator.generateDataProto(                                                          
-          config=config,
           output_proto=data_proto,
           new_repeats=new_repeats,
           var_values={value_key:value})

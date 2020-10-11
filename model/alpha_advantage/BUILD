@@ -46,3 +46,12 @@ py_binary(
       ":simple_lstm",                                                        
     ],                                                                                              
 )
+
+py_binary(                                                                                          
+    name = "simple_lstm_restore_test",                                                               
+    srcs = ["simple_lstm_restore_test.py"],                                                          
+    deps = [                                                                                        
+      ":model_input",                                                        
+      ":simple_lstm",                                                        
+    ],                                                                                              
+)

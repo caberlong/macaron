@@ -13,19 +13,25 @@ def main(argv):
   ])
   model_input = ModelInput(root_dir)
   simple_lstm = SimpleLSTMModel(model_input)
-  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model/simple_lstm'
+  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model'
+
+  latest = tf.train.latest_checkpoint(checkpoint_filepath)
+  optimizer = tf.keras.optimizers.Adam(learning_rate=2.5e-6)
+  simple_lstm.model.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
+  status = simple_lstm.model.load_weights(latest)
+  status.assert_existing_objects_matched()
+
   checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
       filepath=checkpoint_filepath,
       save_weights_only=True,
       monitor='val_loss',
       mode='min',
       save_best_only=True)
-  simple_lstm.model().fit(model_input.dataset_train,
-                          epochs=30,
-                          batch_size=32,
-                          validation_data=model_input.dataset_test,
-                          callbacks=[checkpoint_callback])
-  simple_lstm.model().load_weights(checkpoint_filepath)
+  simple_lstm.model.fit(model_input.dataset_train,
+                        epochs=30,
+                        batch_size=32,
+                        validation_data=model_input.dataset_test,
+                        callbacks=[checkpoint_callback])
                                                                                                     
 if __name__ == '__main__':                                                                          
   main(sys.argv)

@@ -16,20 +16,16 @@ class LinearModel():
 
   def timeSerialsModel(self):
     inputs = self._model_input.timeSerialsInputs
-    print('sequential inputs are: %s' % inputs)
     self._input_layers.append(inputs)
 
     rnn_cell = tf.keras.layers.LSTMCell(5)
     rnn_layer = tf.keras.layers.RNN(rnn_cell)(inputs)
 
-    #return tf.slice(tf.keras.layers.Dense(10)(rnn_layer), [0, 0], [1, 1])
     return rnn_layer
 
   def model(self):
     categorical_model = self.categoricalModel()
     time_serials_model = self.timeSerialsModel()
-
-    #print("categorical_model: %s, time serials_model: %s" % (categorical_model, time_serials_model))
 
     merged_model = tf.keras.layers.concatenate([categorical_model, time_serials_model])
     pred = tf.keras.layers.Dense(1)(merged_model)

@@ -36,7 +36,7 @@ def getConfigs(aa_function: config_pb2.AlphaAdvantageFunction):
     config = config_pb2.AlphaAdvantageSourceConfig()
     config.symbol = symbol
     config.aa_function = aa_function
-    config.output_size = config_pb2.AlphaAdvantageOutputSize.FULL
+    config.output_size = config_pb2.AlphaAdvantageOutputSize.COMPACT
     config.api_key = _api_key
     configs.append(config)
   return configs

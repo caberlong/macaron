@@ -21,6 +21,7 @@ def main(argv):
     print('\n\nprint %d parsed record ' % record)
     print(repr(features))
     print(repr(label))
+    print('last price: %f' % features['historical_prices'][0][0][-1]) 
     if record == 5:
       plt.plot(range(28), features['historical_prices'].numpy())
       plt.legend(['historical_prices'])

@@ -7,8 +7,9 @@ from model.alpha_advantage.model_input import ModelInput
 class SimpleLSTMModel(): 
   def __init__(self, model_input: ModelInput):
     self._model_input = model_input
+    self._model = self.createModel()
 
-  def model(self):
+  def createModel(self):
     price = self._model_input.timeSeriesInputs
     input_layer = [price]
 
@@ -17,7 +18,12 @@ class SimpleLSTMModel():
     pred = tf.keras.layers.Dense(1)(rnn_layer)
 
     model_full = tf.keras.Model(inputs=input_layer, outputs=pred)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-6)
-    model_full.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
+
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=2.5e-6)
+    # model_full.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
 
     return model_full
+
+  @property
+  def model(self):
+    return self._model

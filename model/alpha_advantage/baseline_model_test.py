@@ -17,7 +17,10 @@ def main(argv):
   baseline_model = BaselineModel()
   optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
   baseline_model.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
-  baseline_model.fit(model_input.dataset, epochs=1, batch_size=32)
+  baseline_model.fit(model_input.dataset_train,
+                     epochs=1,
+                     batch_size=32,
+                     validation_data=model_input.dataset_test)
                                                                                                     
 if __name__ == '__main__':                                                                          
   main(sys.argv)

@@ -7,4 +7,5 @@ class BaselineModel(tf.keras.Model):
     super(BaselineModel, self).__init__()
 
   def call(self, inputs):
-    return inputs['historical_prices'][-1]
+    ''' the historical price index * numer_of_feature because historical price is the first one'''
+    return inputs['historical_prices'][0][-1][0]

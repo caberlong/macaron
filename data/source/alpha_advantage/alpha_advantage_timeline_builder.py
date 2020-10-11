@@ -135,7 +135,7 @@ class AlphaAdvantageTimelineBuilder:
     activity_builder = aa_activity_builder.AlphaAdvantageActivityBuilder(parser_config)
     for (start_timestamp, end_timestamp) in timestamps:
       output_path = _getDataProtoOutputPath(parser_config, start_timestamp, symbol)
-      if os.path.isfile(output_path) and os.path.getsize(output_path) > 128:  
+      if os.path.isfile(output_path) and os.path.getsize(output_path) > 1:  
         if parser_config.skip_existing:
           continue
         else:
@@ -171,16 +171,19 @@ class AlphaAdvantageTimelineBuilder:
 
   def createDataProto(self, symbol:str, start_timestamp:int, end_timestamp:int):
     data_proto = data_pb2.Data() 
+    self._generator.configurate(_set_data_proto_common_trait_symbol)
     self._generator.generateDataProto(                                                          
-        config=_set_data_proto_common_trait_symbol,
+        # config=_set_data_proto_common_trait_symbol,
         output_proto=data_proto,
         var_values={'STRING':symbol})
+    self._generator.configurate(_set_data_proto_timeline_start)
     self._generator.generateDataProto(                                                          
-        config=_set_data_proto_timeline_start,
+        # config=_set_data_proto_timeline_start,
         output_proto=data_proto,
         var_values={'INT':start_timestamp})
+    self._generator.configurate(_set_data_proto_timeline_end)
     self._generator.generateDataProto(                                                          
-        config=_set_data_proto_timeline_end,
+        # config=_set_data_proto_timeline_end,
         output_proto=data_proto,
         var_values={'INT':end_timestamp})
     return data_proto

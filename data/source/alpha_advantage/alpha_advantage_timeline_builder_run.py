@@ -15,22 +15,22 @@ _output_dir = '/'.join([_root_dir, 'timeline'])
 
 def getEarningConfig(symbol:str):
   config = config_pb2.AlphaAdvantageParserConfig()
-  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'balance_sheet', '2020-09-06']))
-  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'income_statement', '2020-09-06']))
-  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'cash_flow', '2020-09-06']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'balance_sheet', '2020-10-04']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'income_statement', '2020-10-04']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'cash_flow', '2020-10-04']))
   config.output_dir = '/'.join([_output_dir, 'earning'])
-  config.earliest_timestamp.FromDatetime(datetime.datetime(2000, 1, 1))
-  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 9, 2))
+  config.earliest_timestamp.FromDatetime(datetime.datetime(2020, 5, 1))
+  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 10, 2))
   config.symbols.append(symbol)
   config.interval = config_pb2.AlphaAdvantageParserConfig.INTERVAL_MONTH 
   return config
 
 def getTimeSeriesConfig(symbol:str):
   config = config_pb2.AlphaAdvantageParserConfig()
-  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'time_series_daily_adjusted', '2020-09-06']))
+  config.raw_data_dirs.append('/'.join([_raw_data_dir, 'time_series_daily_adjusted', '2020-10-04']))
   config.output_dir = '/'.join([_output_dir, 'time_series'])
-  config.earliest_timestamp.FromDatetime(datetime.datetime(2000, 1, 1))
-  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 9, 2))
+  config.earliest_timestamp.FromDatetime(datetime.datetime(2020, 5, 1))
+  config.latest_timestamp.FromDatetime(datetime.datetime(2020, 10, 2))
   config.symbols.append(symbol)
   config.interval = config_pb2.AlphaAdvantageParserConfig.INTERVAL_MONTH 
   return config

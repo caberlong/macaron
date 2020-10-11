@@ -28,8 +28,8 @@ def main(argv):
   generator = NormalizedExampleGenerator(
       root_dir=root_dir,
       symbol='AAPL',
-      start_timestamp=datetime.datetime(2020, 8, 2).timestamp(),
-      end_timestamp=datetime.datetime(2020, 9, 1).timestamp(),
+      start_timestamp=datetime.datetime(2020, 9, 5).timestamp(),
+      end_timestamp=datetime.datetime(2020, 10, 2).timestamp(),
       length=_length
   )
   # generator.printFedRateMap()
