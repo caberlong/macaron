@@ -9,7 +9,8 @@ from proto import timeline_pb2
 from proto.activity import activity_pb2
 from data.utils.data_proto_generator import DataProtoGenerator
 
-_simpleExampleActivityLength = 20
+_simpleExampleActivityLength = 28
+_simpleExampleLabelLength = 3
 _interest_rate_file = '/Users/longchb/Documents/GitHub/macaron/data/store/misc/fed-funds-rate.csv'
 
 def _getActivityTimestamp(activity:activity_pb2.Activity):
@@ -24,6 +25,15 @@ def _getActivityTimestampIsoFormat(activity:activity_pb2.Activity):
   timestamp = _getActivityTimestamp(activity)
   return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
 
+def _getActivityKey(activity:activity_pb2.Activity):
+  if activity.HasField('earning_activity'):
+    activity_type = 'earning_activity' 
+  elif activity.HasField('daily_stock_activity'):
+    activity_type = 'daily_stock_activity' 
+  else:
+    raise
+  return ':'.join([activity_type, _getActivityTimestampIsoFormat(activity)])
+
 def _getFedInterestRate(timestamp:int, rate_map:map):
   dt = datetime.datetime.fromtimestamp(timestamp)
   isofmt = dt.strftime('%Y-%m-%d')
@@ -32,15 +42,14 @@ def _getFedInterestRate(timestamp:int, rate_map:map):
   return _getFedInterestRate((dt - datetime.timedelta(days=1)).timestamp(), rate_map)
 
 def _mergeTimelines(data:data_pb2.Data):
-    new_timeline = timeline_pb2.Timeline()
-    for timeline in data.timelines:
-      for activity in timeline.activities:
-        new_timeline.activities.append(activity)
-    new_timeline.activities.sort(reverse=True, key=_getActivityTimestamp)
-    while (len(data.timelines) > 0):
-      data.timelines.pop()
-    data.timelines.append(new_timeline)
-    return data
+  activity_map = {}
+  for timeline in data.timelines:
+    for activity in timeline.activities:
+      activity_map[_getActivityKey(activity)] = activity
+  del data.timelines[0].activities[:]
+  data.timelines[0].activities.extend(activity_map.values())
+  data.timelines[0].activities.sort(reverse=True, key=_getActivityTimestamp)
+  return data
 
 def _inRange(tuple1, tuple2):
   start1, end1 = tuple1
@@ -111,15 +120,20 @@ def _getFedInterestRates(csv_path:str):
 class NormalizedExampleGenerator:
   def __init__(self, 
                root_dir:str,
-               symbol:str,
-               start_timestamp:int,
-               end_timestamp:int,
-               length:int = _simpleExampleActivityLength):
+               symbol:str = None,
+               start_timestamp:int = None,
+               end_timestamp:int = None,
+               length:int = _simpleExampleActivityLength,
+               label_length: int = _simpleExampleLabelLength):
+    self._root_dir = root_dir
     self._generator = DataProtoGenerator()
     self._length = length
-    self._merged_timeline = self.getMergedTimeline(
-        root_dir, symbol, start_timestamp, end_timestamp)
+    self._label_length = label_length
     self._fed_rate_map = _getFedInterestRates(_interest_rate_file)
+    self._merged_timeline = None
+    if symbol:
+      self._merged_timeline = self.getMergedTimeline(
+          root_dir, symbol, start_timestamp, end_timestamp)
 
   def printFedRateMap(self):
     print(self._fed_rate_map)
@@ -152,25 +166,94 @@ class NormalizedExampleGenerator:
         examples.append(example)
     return examples
 
+  def getSimpleExampleAtDate(self, timestamp:int):
+    activities = self._merged_timeline.timelines[0].activities;
+    for index in range(len(activities)):
+      activity = activities[index]
+      activity_timestamp = _getActivityTimestamp(activity)
+      if activity_timestamp > timestamp:
+        continue
+      return self.getSimpleExample(activities, index)
+    return None
+
+  def getInferenceExampleAtDate(self, symbol:str, timestamp:int):
+    if not self._merged_timeline:
+      start_timestamp = timestamp - self._length * 24 * 3600 * 2
+      end_timestamp = timestamp
+      self._merged_timeline = self.getMergedTimeline(
+          self._root_dir, symbol, start_timestamp, end_timestamp)
+    activities = self._merged_timeline.timelines[0].activities
+    for index in range(len(activities)):
+      activity = activities[index]
+      activity_timestamp = _getActivityTimestamp(activity)
+      if activity_timestamp > timestamp:
+        continue
+      return self.getInferenceExample(activities, index)
+    return None, None
+
   def getSimpleExample(self, activities, index):
+    norm_prices, norm_highs, norm_lows, norm_volumes, fed_rates, _ = self.getNormalizedValues(
+        activities, index, self._length + self._label_length)
+    if norm_prices == None:
+      return None
+
+    # Get the label price as volume averaged
+    total_volume = 0
+    total_price = 0
+    for count in range(self._label_length):
+      idx = self._length + count
+      this_volume = norm_volumes[idx] * (1 / 2 ** count)
+      total_volume = total_volume + this_volume
+      total_price = total_price + norm_prices[idx] * this_volume
+    label_price = total_price / total_volume
+
+    example = tf.train.Example()
+    
+    _normalizedPricesToExample(
+        norm_prices[:-self._label_length], 'historical_prices', self._generator, example)
+    _normalizedPricesToExample(
+        norm_highs[:-self._label_length], 'historical_highs', self._generator, example)
+    _normalizedPricesToExample(
+        norm_lows[:-self._label_length], 'historical_lows', self._generator, example)
+    _normalizedPricesToExample(
+        norm_volumes[:-self._label_length], 'historical_volumes', self._generator, example)
+    _normalizedPricesToExample(
+        fed_rates[:-self._label_length], 'fed_rates', self._generator, example)
+    _labelPriceToExample(label_price, self._generator, example)
+    return example
+
+  def getInferenceExample(self, activities, index):
+    norm_prices, norm_highs, norm_lows, norm_volumes, fed_rates, scale = self.getNormalizedValues(
+        activities, index, self._length)
+    if norm_prices == None:
+      return None, None
+    example = tf.train.Example()
+    _normalizedPricesToExample(norm_prices, 'historical_prices', self._generator, example)
+    _normalizedPricesToExample(norm_highs, 'historical_highs', self._generator, example)
+    _normalizedPricesToExample(norm_lows, 'historical_lows', self._generator, example)
+    _normalizedPricesToExample(norm_volumes, 'historical_volumes', self._generator, example)
+    _normalizedPricesToExample(fed_rates, 'fed_rates', self._generator, example)
+    return example, scale
+
+  def getNormalizedValues(self, activities, index, length):
     activity = activities[index]
     if not activity.HasField('daily_stock_activity'):
-      return None
+      return None, None, None, None, None, None
 
     base_price = activity.daily_stock_activity.close * activity.daily_stock_activity.split
     base_volume = activity.daily_stock_activity.volume / activity.daily_stock_activity.split 
+    init_base_price = base_price
     if not base_price or not base_volume:
-      return None
+      return None, None, None, None, None, None
 
     norm_prices = []
     norm_highs = []
     norm_lows = []
     norm_volumes = []
     fed_rates = []
-    index = index + 1
-    while len(norm_prices) <= self._length:
-      if index >= len(activities) - 1:
-        return None
+    while len(norm_prices) < length:
+      if index > len(activities) - 1:
+        return None, None, None, None, None, None
       activity = activities[index]
       if not (activity.HasField('daily_stock_activity') and
               activity.daily_stock_activity.close and
@@ -205,16 +288,7 @@ class NormalizedExampleGenerator:
     volume_scale = norm_volumes[0]
     norm_volumes = [volume/volume_scale for volume in norm_volumes]
 
-    label_price = 1.0 / scale
-
-    example = tf.train.Example()
-    _normalizedPricesToExample(norm_prices[:-1], 'historical_prices', self._generator, example)
-    _normalizedPricesToExample(norm_highs[:-1], 'historical_highs', self._generator, example)
-    _normalizedPricesToExample(norm_lows[:-1], 'historical_lows', self._generator, example)
-    _normalizedPricesToExample(norm_volumes[:-1], 'historical_volumes', self._generator, example)
-    _normalizedPricesToExample(fed_rates[:-1], 'fed_rates', self._generator, example)
-    _labelPriceToExample(label_price, self._generator, example)
-    return example
+    return norm_prices, norm_highs, norm_lows, norm_volumes, fed_rates, init_base_price/scale
 
   @property
   def mergedTimeline(self):

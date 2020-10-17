@@ -19,8 +19,8 @@ class SimpleLSTMModel():
 
     model_full = tf.keras.Model(inputs=input_layer, outputs=pred)
 
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=2.5e-6)
-    # model_full.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=2.5e-6)
+    #model_full.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
 
     return model_full
 

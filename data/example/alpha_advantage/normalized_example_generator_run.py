@@ -15,6 +15,7 @@ _output_dir = '/'.join([_root_dir, 'normalized_price_simple_example'])
 _start_timestamp = datetime.datetime(2010, 1, 1).timestamp()
 _end_timestamp = datetime.datetime(2020, 9, 6).timestamp()
 _length = 28
+_label_length = 3
 
 def generateOneSymbol(symbol:str):
   parent_dir = _output_dir
@@ -28,7 +29,8 @@ def generateOneSymbol(symbol:str):
       symbol=symbol,
       start_timestamp=_start_timestamp,
       end_timestamp=_end_timestamp,
-      length=_length
+      length=_length,
+      label_length = _label_length
   ).getSimpleExamples()
 
   with tf.io.TFRecordWriter(output_path) as writer:

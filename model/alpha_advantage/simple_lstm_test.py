@@ -13,7 +13,7 @@ def main(argv):
   ])
   model_input = ModelInput(root_dir)
   simple_lstm = SimpleLSTMModel(model_input)
-  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model/simple_lstm'
+  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model_510'
   checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
       filepath=checkpoint_filepath,
       save_weights_only=True,
