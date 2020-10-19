@@ -56,6 +56,11 @@ class ModelInput:
   def _getTimeSeriesInputs(self):
     return tf.keras.Input(shape=(None, 5), name='historical_prices', dtype=tf.float32)
 
+  def parseInferenceExample(example:tf.train.Example):
+    tensors = tf.io.parse_single_example(
+        example.SerializeToString(), _feature_description)
+    return _featureTensors(tensors)
+
   @property
   def dataset(self):
     return self._dataset

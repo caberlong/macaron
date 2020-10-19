@@ -4,5 +4,6 @@ package_group(
 		"//data/...",
 		"//proto/...",
 		"//model/...",
+    "//inference/...",
 	],
 )

@@ -191,6 +191,14 @@ class NormalizedExampleGenerator:
       return self.getInferenceExample(activities, index)
     return None, None
 
+  def getClosePriceAtDate(self, symbol:str, timestamp:int):
+    timeline = self.getMergedTimeline(self._root_dir, symbol, timestamp, timestamp)
+    for activity in timeline.timelines[0].activities:
+      if _getActivityTimestamp(activity) == timestamp:
+        if activity.HasField('daily_stock_activity'):                                                   
+          return activity.daily_stock_activity.close
+    return None
+
   def getSimpleExample(self, activities, index):
     norm_prices, norm_highs, norm_lows, norm_volumes, fed_rates, _ = self.getNormalizedValues(
         activities, index, self._length + self._label_length)

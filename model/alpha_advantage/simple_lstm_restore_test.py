@@ -13,10 +13,10 @@ def main(argv):
   ])
   model_input = ModelInput(root_dir)
   simple_lstm = SimpleLSTMModel(model_input)
-  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model_510'
+  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/model_510_2'
 
   latest = tf.train.latest_checkpoint(checkpoint_filepath)
-  optimizer = tf.keras.optimizers.Adam(learning_rate=5.0e-3)
+  optimizer = tf.keras.optimizers.Adam(learning_rate=2.0e-2)
   simple_lstm.model.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())
   status = simple_lstm.model.load_weights(latest)
   status.assert_existing_objects_matched()
