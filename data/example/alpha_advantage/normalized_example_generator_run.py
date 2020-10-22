@@ -8,7 +8,7 @@ from data.source.alpha_advantage import alpha_advantage_downloader_run as downlo
 from data.example.alpha_advantage.normalized_example_generator import NormalizedExampleGenerator
 from multiprocessing import Pool 
 
-_root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage'
+_root_dir = '../../data/store/alpha_advantage'
 _timeline_data_dir = '/'.join([_root_dir, 'timeline'])
 _output_dir = '/'.join([_root_dir, 'normalized_price_simple_example'])
 

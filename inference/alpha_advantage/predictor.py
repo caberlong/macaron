@@ -6,7 +6,7 @@ from model.alpha_advantage.model_input import ModelInput
 from model.alpha_advantage.simple_lstm import SimpleLSTMModel
 from data.example.alpha_advantage.normalized_example_generator import NormalizedExampleGenerator
 
-_data_store_root = '/Users/longchb/Documents/GitHub/macaron/data/store' 
+_data_store_root = '../../data/store' 
 
 class Predictor:
   def __init__(self):

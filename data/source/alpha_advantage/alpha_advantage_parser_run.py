@@ -8,7 +8,7 @@ from data.source.alpha_advantage import alpha_advantage_downloader_run as downlo
 from google.protobuf import timestamp_pb2
 from multiprocessing import Pool 
 
-_root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage'
+_root_dir = '../../store/alpha_advantage'
 _raw_data_dir = '/'.join([_root_dir, 'raw/overview'])
 _output_dir = '/'.join([_root_dir, 'proto'])
 

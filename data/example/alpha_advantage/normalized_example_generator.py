@@ -11,7 +11,7 @@ from data.utils.data_proto_generator import DataProtoGenerator
 
 _simpleExampleActivityLength = 28
 _simpleExampleLabelLength = 3
-_interest_rate_file = '/Users/longchb/Documents/GitHub/macaron/data/store/misc/fed-funds-rate.csv'
+_interest_rate_file = '../../store/misc/fed-funds-rate.csv'
 
 def _getActivityTimestamp(activity:activity_pb2.Activity):
   if activity.HasField('earning_activity'):

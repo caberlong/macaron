@@ -3,7 +3,7 @@ import sys
 from model.vocabulary import Vocabulary
                                                                                                     
 def main(argv):                                                                                     
-  root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/yahoo_quote/example'               
+  root_dir = '../data/store/yahoo_quote/example'               
   Vocabulary(root_dir).computeVocabs()
 
   

@@ -10,7 +10,7 @@ mpl.rcParams['axes.grid'] = False
 
 def main(argv):                                                                                     
   root_dir = '/'.join([
-      '/Users/longchb/Documents/GitHub/macaron/data/store',
+      '../../data/store',
       'alpha_advantage',
       'normalized_price_simple_example'
   ])

@@ -22,7 +22,7 @@ def plot(examples):
 
 def main(argv):
   root_dir = '/'.join([
-    '/Users/longchb/Documents/GitHub/macaron/data/store',
+    '../../store',
     'alpha_advantage',
     'timeline'
   ])

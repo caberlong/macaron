@@ -5,7 +5,7 @@ from proto.source import alpha_advantage_parser_config_pb2 as config_pb2
 from data.source.alpha_advantage import alpha_advantage_timeline_builder
 from google.protobuf import timestamp_pb2
 
-_root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage'
+_root_dir = '../../store/alpha_advantage'
 _raw_data_dir = '/'.join([_root_dir, 'raw'])
 _output_dir = '/'.join([_root_dir, 'timeline'])
 

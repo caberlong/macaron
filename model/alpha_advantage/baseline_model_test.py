@@ -8,7 +8,7 @@ from model.alpha_advantage.baseline_model import BaselineModel
 
 def main(argv):                                                                                     
   root_dir = '/'.join([
-      '/Users/longchb/Documents/GitHub/macaron/data/store',
+      '../../data/store',
       'alpha_advantage',
       'normalized_price_simple_example'
   ])

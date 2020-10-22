@@ -7,7 +7,7 @@ from model.linear_model import LinearModel
 
 
 def main(argv):                                                                                     
-  root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/alpha_advantage/example'
+  root_dir = '../data/store/alpha_advantage/example'
   model_input = ModelInput(root_dir)
 
   for features, label in model_input.dataset.take(1):

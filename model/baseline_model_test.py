@@ -7,7 +7,7 @@ from model.baseline_model import BaselineModel
 
 
 def main(argv):                                                                                     
-  root_dir = '/Users/longchb/Documents/GitHub/macaron/data/store/yahoo_quote/example'
+  root_dir = '../data/store/yahoo_quote/example'
   model_input = ModelInput(root_dir)
   train = model_input.dataset
 
