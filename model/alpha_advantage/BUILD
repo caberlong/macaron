@@ -20,6 +20,21 @@ py_binary(
 )
 
 py_library(                                                                                         
+    name = "model_input_int32",
+    srcs = ["model_input_int32.py"],
+		deps = [
+		]
+)                                                                                                   
+
+py_binary(                                                                                          
+    name = "model_input_int32_test",                                                               
+    srcs = ["model_input_int32_test.py"],                                                          
+    deps = [                                                                                        
+      ":model_input_int32",                                                        
+    ],                                                                                              
+)
+
+py_library(                                                                                         
     name = "baseline_model",
     srcs = ["baseline_model.py"],
 )                                                                                                   
@@ -29,6 +44,7 @@ py_binary(
     srcs = ["baseline_model_test.py"],                                                          
     deps = [                                                                                        
       ":model_input",                                                        
+      ":model_input_int32",
       ":baseline_model",                                                        
     ],                                                                                              
 )
@@ -43,6 +59,7 @@ py_binary(
     srcs = ["simple_lstm_test.py"],                                                          
     deps = [                                                                                        
       ":model_input",                                                        
+      ":model_input_int32",
       ":simple_lstm",                                                        
     ],                                                                                              
 )

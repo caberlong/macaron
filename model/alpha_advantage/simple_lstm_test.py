@@ -1,7 +1,7 @@
 import sys
 import tensorflow as tf
 
-from model.alpha_advantage.model_input import ModelInput
+from model.alpha_advantage.model_input_int32 import ModelInput
 from model.alpha_advantage.simple_lstm import SimpleLSTMModel
 
 
@@ -12,7 +12,7 @@ def main(argv):
   ])
   model_input = ModelInput(root_dir)
   simple_lstm = SimpleLSTMModel(model_input)
-  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/models/model_1018_2020/simple_lstm'
+  checkpoint_filepath = '/Users/longchb/Documents/GitHub/macaron/data/store/models/model_1026_2020/simple_lstm'
 
   optimizer = tf.keras.optimizers.Adam(learning_rate=5.0e-3)
   simple_lstm.model.compile(optimizer, loss=tf.keras.losses.MeanSquaredError())

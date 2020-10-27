@@ -2,7 +2,7 @@ import sys
 
 import tensorflow as tf
 
-from model.alpha_advantage.model_input import ModelInput
+from model.alpha_advantage.model_input_int32 import ModelInput
 from model.alpha_advantage.baseline_model import BaselineModel
 
 
